@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAccess Campus - QR Scanner</title>
+
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/scanner.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-mark">R</div>
+
+        <div>
+            <h1>RICHFIELD</h1>
+            <span>SmartAccess Campus</span>
+        </div>
+    </div>
+
+    <nav>
+        <a href="#">Dashboard</a>
+        <a href="scanner.html" class="active">QR Scanner</a>
+        <a href="academic_calendar.html">Calendar</a>
+    </nav>
+
+</header>
+
+
+<main class="page-container">
+
+    <div class="page-heading">
+
+        <p class="breadcrumb">
+            SmartAccess Campus / Security
+        </p>
+
+        <h2>QR Student Verification</h2>
+
+        <p>
+            Scan a student's digital access card to verify their
+            identity and access status.
+        </p>
+
+    </div>
+
+
+    <section class="scanner-card">
+
+        <div class="scanner-header">
+
+            <div>
+                <h3>Scan Student QR Code</h3>
+
+                <p>
+                    Position the student's QR code inside the
+                    scanning area.
+                </p>
+            </div>
+
+            <span
+                class="status-badge"
+                id="scannerStatus"
+            >
+                Ready
+            </span>
+
+        </div>
+
+
+        <div class="camera-area">
+
+            <div class="scan-frame">
+
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+
+
+                <video
+                    id="cameraPreview"
+                    autoplay
+                    playsinline
+                    muted
+                ></video>
+
+
+                <div
+                    class="camera-placeholder"
+                    id="cameraPlaceholder"
+                >
+
+                    <div class="camera-icon">
+                        ▣
+                    </div>
+
+                    <p>
+                        Camera preview will appear here
+                    </p>
+
+                    <span>
+                        Click Start Camera to begin scanning
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="scan-line"
+                    id="scanLine"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="scanner-actions">
+
+            <button
+                type="button"
+                class="primary-btn"
+                id="startCameraBtn"
+            >
+                Start Camera
+            </button>
+
+
+            <button
+                type="button"
+                class="stop-btn"
+                id="stopCameraBtn"
+                disabled
+            >
+                Stop Camera
+            </button>
+
+
+            <label
+                class="secondary-btn"
+                for="qrUpload"
+            >
+                Upload QR Image
+            </label>
+
+
+            <input
+                type="file"
+                id="qrUpload"
+                accept="image/*"
+                hidden
+            >
+
+        </div>
+
+
+        <div
+            class="scan-message"
+            id="scanMessage"
+        >
+
+            <span
+                class="message-indicator"
+                id="messageIndicator"
+            ></span>
+
+            <span id="messageText">
+                Waiting for QR code...
+            </span>
+
+        </div>
+
+
+        <div
+            class="demo-section"
+        >
+
+            <p>
+                Testing without a physical QR code?
+            </p>
+
+            <button
+                type="button"
+                id="demoScanBtn"
+                class="demo-btn"
+            >
+                Test QR0001
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="info-section">
+
+        <h3>
+            How verification works
+        </h3>
+
+
+        <div class="info-grid">
+
+            <div class="info-card">
+
+                <span class="step-number">
+                    1
+                </span>
+
+                <h4>
+                    Scan
+                </h4>
+
+                <p>
+                    Scan the QR code displayed on the student's
+                    digital access card.
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <span class="step-number">
+                    2
+                </span>
+
+                <h4>
+                    Verify
+                </h4>
+
+                <p>
+                    SmartAccess checks the QR information against
+                    the student access-card record.
+                </p>
+
+            </div>
+
+
+            <div class="info-card">
+
+                <span class="step-number">
+                    3
+                </span>
+
+                <h4>
+                    Confirm
+                </h4>
+
+                <p>
+                    The student's identity and card status are
+                    displayed on the verification page.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 SmartAccess Campus |
+        Richfield Graduate Institute of Technology
+    </p>
+
+</footer>
+
+
+<script src="../static/js/scanner.js"></script>
+
+</body>
+</html>

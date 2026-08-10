@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAccess Campus - Student Verification</title>
+
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/verification.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-mark">R</div>
+
+        <div>
+            <h1>RICHFIELD</h1>
+            <span>SmartAccess Campus</span>
+        </div>
+    </div>
+
+    <nav>
+        <a href="#">Dashboard</a>
+        <a href="scanner.html">QR Scanner</a>
+        <a href="academic_calendar.html">Calendar</a>
+    </nav>
+
+</header>
+
+
+<main class="page-container">
+
+    <div class="page-heading">
+
+        <p class="breadcrumb">
+            SmartAccess Campus / Verification
+        </p>
+
+        <h2>Student Verification</h2>
+
+        <p>
+            Review the student's identity and digital access card status.
+        </p>
+
+    </div>
+
+
+    <section
+        class="verification-layout"
+        id="verificationContent"
+    >
+
+        <div class="student-card">
+
+            <div
+                class="verification-banner"
+                id="verificationBanner"
+            >
+
+                <span
+                    class="verification-icon"
+                    id="verificationIcon"
+                >
+                    ✓
+                </span>
+
+                <div>
+                    <h3 id="verificationTitle">
+                        Access Granted
+                    </h3>
+
+                    <p id="verificationMessage">
+                        Student identity successfully verified.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="student-profile">
+
+                <div
+                    class="student-photo"
+                    id="studentPhoto"
+                >
+                    --
+                </div>
+
+                <div class="student-name">
+
+                    <h3 id="studentName">
+                        Loading...
+                    </h3>
+
+                    <p id="studentNumber">
+                        --
+                    </p>
+
+                </div>
+
+                <span
+                    class="active-badge"
+                    id="cardBadge"
+                >
+                    Checking
+                </span>
+
+            </div>
+
+
+            <div class="student-details">
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Email
+                    </span>
+
+                    <strong id="studentEmail">
+                        --
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Course
+                    </span>
+
+                    <strong id="studentCourse">
+                        --
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Faculty
+                    </span>
+
+                    <strong id="studentFaculty">
+                        --
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span class="detail-label">
+                        Card Expiry
+                    </span>
+
+                    <strong id="cardExpiry">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <aside class="access-panel">
+
+            <h3>Access Details</h3>
+
+
+            <div class="access-item">
+
+                <span>Card Status</span>
+
+                <strong id="cardStatus">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <span>QR Code</span>
+
+                <strong id="qrCode">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <span>Scan Location</span>
+
+                <strong id="scanLocation">
+                    Main Entrance
+                </strong>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <span>Scan Time</span>
+
+                <strong id="scanTime">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <span>Attendance</span>
+
+                <strong id="attendanceStatus">
+                    Pending
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="confirm-btn"
+                id="confirmAccessBtn"
+            >
+                Confirm Access
+            </button>
+
+
+            <a
+                href="scanner.html"
+                class="back-link"
+            >
+                ← Scan another student
+            </a>
+
+        </aside>
+
+    </section>
+
+
+    <section
+        class="module-section"
+        id="moduleSection"
+    >
+
+        <div class="section-title">
+
+            <h3>
+                Today's Academic Information
+            </h3>
+
+        </div>
+
+
+        <div class="module-card">
+
+            <div>
+
+                <span
+                    class="module-code"
+                    id="moduleCode"
+                >
+                    --
+                </span>
+
+                <h4 id="moduleName">
+                    No module loaded
+                </h4>
+
+                <p>
+                    Current student module information
+                </p>
+
+            </div>
+
+
+            <div class="module-meta">
+
+                <span>Venue</span>
+
+                <strong id="moduleVenue">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="module-meta">
+
+                <span>Day</span>
+
+                <strong id="moduleDay">
+                    --
+                </strong>
+
+            </div>
+
+
+            <div class="module-meta">
+
+                <span>Time</span>
+
+                <strong id="moduleTime">
+                    --
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section
+        class="invalid-section"
+        id="invalidSection"
+    >
+
+        <div class="invalid-card">
+
+            <div class="invalid-icon">
+                !
+            </div>
+
+            <h3>
+                Student Could Not Be Verified
+            </h3>
+
+            <p>
+                The scanned QR code does not match an active
+                SmartAccess digital access card.
+            </p>
+
+            <a
+                href="scanner.html"
+                class="invalid-btn"
+            >
+                Scan Again
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 SmartAccess Campus |
+        Richfield Graduate Institute of Technology
+    </p>
+
+</footer>
+
+
+<script src="../static/js/verification.js"></script>
+
+</body>
+</html>
