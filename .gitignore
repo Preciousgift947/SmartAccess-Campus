@@ -1,0 +1,40 @@
+# Python virtual environment
+venv/
+env/
+ENV/
+.env
+.env.local
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploaded files (student photos)
+media/
+uploads/
+
+# Secrets
+.secrets
+config.local.py
