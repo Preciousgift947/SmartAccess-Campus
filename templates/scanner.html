@@ -17,16 +17,18 @@
     <div class="brand">
         <div class="brand-mark">R</div>
 
-        <div>
+        <div class="brand-text">
             <h1>RICHFIELD</h1>
             <span>SmartAccess Campus</span>
         </div>
     </div>
 
-    <nav>
-        <a href="#">Dashboard</a>
-        <a href="scanner.html" class="active">QR Scanner</a>
-        <a href="academic_calendar.html">Calendar</a>
+    <nav class="main-nav">
+        <a href="staff_dashboard.html" class="nav-link">Dashboard</a>
+        <a href="scanner.html" class="nav-link active">QR Scanner</a>
+        <a href="academic_calendar.html" class="nav-link">Calendar</a>
+        <a href="reports.html" class="nav-link">Reports</a>
+        <a href="notifications.html" class="nav-link">Notifications</a>
     </nav>
 
 </header>
@@ -34,7 +36,7 @@
 
 <main class="page-container">
 
-    <div class="page-heading">
+    <section class="page-heading">
 
         <p class="breadcrumb">
             SmartAccess Campus / Security
@@ -42,25 +44,27 @@
 
         <h2>QR Student Verification</h2>
 
-        <p>
+        <p class="page-description">
             Scan a student's digital access card to verify their
             identity and access status.
         </p>
 
-    </div>
+    </section>
 
 
     <section class="scanner-card">
 
         <div class="scanner-header">
 
-            <div>
+            <div class="scanner-heading-text">
+
                 <h3>Scan Student QR Code</h3>
 
                 <p>
                     Position the student's QR code inside the
                     scanning area.
                 </p>
+
             </div>
 
             <span
@@ -125,7 +129,7 @@
 
             <button
                 type="button"
-                class="primary-btn"
+                class="primary-btn scanner-action-btn"
                 id="startCameraBtn"
             >
                 Start Camera
@@ -134,7 +138,7 @@
 
             <button
                 type="button"
-                class="stop-btn"
+                class="stop-btn scanner-action-btn"
                 id="stopCameraBtn"
                 disabled
             >
@@ -143,7 +147,7 @@
 
 
             <label
-                class="secondary-btn"
+                class="secondary-btn scanner-action-btn"
                 for="qrUpload"
             >
                 Upload QR Image
@@ -177,9 +181,7 @@
         </div>
 
 
-        <div
-            class="demo-section"
-        >
+        <div class="demo-section">
 
             <p>
                 Testing without a physical QR code?
@@ -207,7 +209,7 @@
 
         <div class="info-grid">
 
-            <div class="info-card">
+            <article class="info-card">
 
                 <span class="step-number">
                     1
@@ -222,10 +224,10 @@
                     digital access card.
                 </p>
 
-            </div>
+            </article>
 
 
-            <div class="info-card">
+            <article class="info-card">
 
                 <span class="step-number">
                     2
@@ -240,10 +242,10 @@
                     the student access-card record.
                 </p>
 
-            </div>
+            </article>
 
 
-            <div class="info-card">
+            <article class="info-card">
 
                 <span class="step-number">
                     3
@@ -258,7 +260,7 @@
                     displayed on the verification page.
                 </p>
 
-            </div>
+            </article>
 
         </div>
 
