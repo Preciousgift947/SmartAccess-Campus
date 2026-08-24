@@ -1,0 +1,149 @@
+:root {
+    --navy: #0b3a78;
+    --blue: #0f5fb3;
+    --red: #e5483f;
+    --light-bg: #f5f7fb;
+    --white: #ffffff;
+    --text: #17375e;
+    --muted: #6b7280;
+    --border: #dbe3ee;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--light-bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.topbar {
+    background: var(--navy);
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 36px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-mark {
+    width: 42px;
+    height: 42px;
+    border: 2px solid var(--white);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.brand h1 {
+    font-size: 23px;
+    letter-spacing: 1px;
+}
+
+.brand span {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+nav {
+    display: flex;
+    gap: 26px;
+}
+
+nav a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 15px;
+    padding: 8px 0;
+    position: relative;
+}
+
+nav a:hover,
+nav a.active {
+    color: #ffffff;
+}
+
+nav a.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -14px;
+    height: 3px;
+    background: var(--red);
+}
+
+.page-container {
+    width: min(1100px, 92%);
+    margin: 38px auto;
+}
+
+.page-heading {
+    margin-bottom: 26px;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    color: var(--blue);
+    margin-bottom: 8px;
+}
+
+.page-heading h2 {
+    font-size: 32px;
+    color: var(--navy);
+    margin-bottom: 8px;
+}
+
+.page-heading p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+button,
+.secondary-btn {
+    font-family: inherit;
+}
+
+footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+@media (max-width: 800px) {
+    .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 18px 22px;
+    }
+
+    nav {
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    nav a.active::after {
+        bottom: -7px;
+    }
+
+    .page-heading h2 {
+        font-size: 27px;
+    }
+}
