@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartAccess Campus | Login</title>
+
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-page">
+
+  <main class="login-shell">
+
+    <section class="login-brand">
+      <div class="brand-mark">SA</div>
+
+      <h1>SmartAccess Campus</h1>
+
+      <p>Digital Student Access & Academic Management System</p>
+
+      <div class="login-feature-list">
+        <span>✓ Digital student access</span>
+        <span>✓ QR-code verification</span>
+        <span>✓ Attendance tracking</span>
+        <span>✓ Academic reminders</span>
+      </div>
+    </section>
+
+    <section class="login-card">
+
+      <div class="mobile-brand">SmartAccess Campus</div>
+
+      <h2>Welcome back</h2>
+
+      <p class="muted">
+        Sign in to continue to your campus account.
+      </p>
+
+      <form method="POST" action="{{ url_for('auth.login') }}">
+
+        {{ form.hidden_tag() }}
+
+        <label for="identifier">
+          Student Number or Email
+        </label>
+
+        {{ form.identifier(
+            id="identifier",
+            placeholder="Enter student number or email"
+        ) }}
+
+        {% for error in form.identifier.errors %}
+          <span style="color:red;">{{ error }}</span>
+        {% endfor %}
+
+
+        <label for="password">
+          Password
+        </label>
+
+        {{ form.password(
+            id="password",
+            placeholder="Enter password"
+        ) }}
+
+        {% for error in form.password.errors %}
+          <span style="color:red;">{{ error }}</span>
+        {% endfor %}
+
+
+        {{ form.submit(
+            class="btn primary full",
+            value="Sign In"
+        ) }}
+
+      </form>
+
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% if messages %}
+
+          {% for category, message in messages %}
+
+            <div class="alert">
+              {{ message }}
+            </div>
+
+          {% endfor %}
+
+        {% endif %}
+
+      {% endwith %}
+
+    </section>
+
+  </main>
+
+</body>
+</html>
