@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAccess Campus - Academic Calendar</title>
+
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/calendar.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-mark">R</div>
+
+        <div>
+            <h1>RICHFIELD</h1>
+            <span>SmartAccess Campus</span>
+        </div>
+    </div>
+
+   <nav>
+    <a href="staff_dashboard.html">Dashboard</a>
+    <a href="scanner.html">QR Scanner</a>
+    <a href="academic_calendar.html" class="active">Calendar</a>
+    <a href="reports.html">Reports</a>
+    <a href="notifications.html">Notifications</a>
+</nav>
+
+</header>
+
+
+<main class="page-container">
+
+    <div class="page-heading">
+
+        <p class="breadcrumb">
+            SmartAccess Campus / Academic Calendar
+        </p>
+
+        <h2>Academic Calendar</h2>
+
+        <p>
+            View upcoming assignments, tests and examinations linked
+            to your registered modules.
+        </p>
+
+    </div>
+
+
+    <section class="calendar-summary">
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Upcoming Events
+            </span>
+
+            <strong id="totalEvents">
+                0
+            </strong>
+
+            <p>
+                Academic activities currently scheduled
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Assignments
+            </span>
+
+            <strong id="assignmentCount">
+                0
+            </strong>
+
+            <p>
+                Upcoming submission deadlines
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Tests
+            </span>
+
+            <strong id="testCount">
+                0
+            </strong>
+
+            <p>
+                Scheduled class tests
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span class="summary-label">
+                Examinations
+            </span>
+
+            <strong id="examCount">
+                0
+            </strong>
+
+            <p>
+                Upcoming examination dates
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section class="calendar-layout">
+
+        <div class="calendar-panel">
+
+            <div class="calendar-toolbar">
+
+                <div>
+
+                    <p class="calendar-label">
+                        Academic Month
+                    </p>
+
+                    <h3>
+                        September 2026
+                    </h3>
+
+                </div>
+
+
+                <div class="calendar-controls">
+
+                    <button
+                        type="button"
+                        class="calendar-btn"
+                        id="previousMonthBtn"
+                    >
+                        ‹
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="today-btn"
+                        id="todayBtn"
+                    >
+                        Today
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="calendar-btn"
+                        id="nextMonthBtn"
+                    >
+                        ›
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="calendar-weekdays">
+
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+                <div>Sun</div>
+
+            </div>
+
+
+            <div
+                id="calendar"
+                class="calendar-grid"
+            >
+            </div>
+
+        </div>
+
+
+        <aside class="events-panel">
+
+            <div class="events-heading">
+
+                <h3>
+                    Upcoming Events
+                </h3>
+
+                <span>
+                    September
+                </span>
+
+            </div>
+
+
+            <div id="upcomingEvents">
+            </div>
+
+
+            <div class="reminder-box">
+
+                <h4>
+                    Reminder
+                </h4>
+
+                <p>
+                    Academic reminders will appear automatically once
+                    notifications are connected to the backend.
+                </p>
+
+            </div>
+
+        </aside>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 SmartAccess Campus |
+        Richfield Graduate Institute of Technology
+    </p>
+
+</footer>
+
+
+<script src="../static/js/calendar.js"></script>
+
+</body>
+</html>

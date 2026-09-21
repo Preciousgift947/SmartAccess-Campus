@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAccess Campus - Reports</title>
+
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/reports.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-mark">R</div>
+
+        <div>
+            <h1>RICHFIELD</h1>
+            <span>SmartAccess Campus</span>
+        </div>
+    </div>
+
+    <nav>
+        <a href="staff_dashboard.html">Dashboard</a>
+        <a href="scanner.html">QR Scanner</a>
+        <a href="academic_calendar.html">Calendar</a>
+        <a href="reports.html" class="active">Reports</a>
+        <a href="notifications.html">Notifications</a>
+    </nav>
+
+</header>
+
+
+<main class="reports-page">
+
+    <section class="page-heading">
+
+        <p class="breadcrumb">
+            SmartAccess Campus / Staff / Reports
+        </p>
+
+        <h2>Access Reports</h2>
+
+        <p>
+            Review student access verification activity and recent campus entry records.
+        </p>
+
+    </section>
+
+
+    <section class="report-summary">
+
+        <div class="summary-card">
+
+            <span>Total Scans</span>
+
+            <strong>124</strong>
+
+            <p>Recorded access attempts</p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span>Access Granted</span>
+
+            <strong>112</strong>
+
+            <p>Successful verifications</p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span>Access Denied</span>
+
+            <strong>12</strong>
+
+            <p>Failed or inactive cards</p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <span>Active Locations</span>
+
+            <strong>3</strong>
+
+            <p>Campus scanning points</p>
+
+        </div>
+
+    </section>
+
+
+    <section class="report-layout">
+
+        <div class="report-main-card">
+
+            <div class="report-heading">
+
+                <div>
+                    <h3>Recent Access Activity</h3>
+                    <p>Latest student verification records.</p>
+                </div>
+
+            </div>
+
+
+            <div class="report-table-wrapper">
+
+                <table class="report-table">
+
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Student Number</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>Lerato Molefe</td>
+                            <td>ST2025001</td>
+                            <td>Main Entrance</td>
+                            <td>24 Aug 2026</td>
+                            <td>08:50</td>
+                            <td>
+                                <span class="report-status granted">
+                                    Granted
+                                </span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Thabo Nkosi</td>
+                            <td>ST2025018</td>
+                            <td>Main Entrance</td>
+                            <td>24 Aug 2026</td>
+                            <td>08:47</td>
+                            <td>
+                                <span class="report-status denied">
+                                    Denied
+                                </span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Karabo Mokoena</td>
+                            <td>ST2025032</td>
+                            <td>Library Entrance</td>
+                            <td>24 Aug 2026</td>
+                            <td>08:41</td>
+                            <td>
+                                <span class="report-status granted">
+                                    Granted
+                                </span>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>Neo Maseko</td>
+                            <td>ST2025045</td>
+                            <td>Computer Lab</td>
+                            <td>24 Aug 2026</td>
+                            <td>08:32</td>
+                            <td>
+                                <span class="report-status granted">
+                                    Granted
+                                </span>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <aside class="reports-sidebar">
+
+            <section class="sidebar-card">
+
+                <h3>Report Summary</h3>
+
+                <div class="summary-row">
+
+                    <span>Success Rate</span>
+
+                    <strong>90%</strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>Denied Rate</span>
+
+                    <strong>10%</strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>Busiest Location</span>
+
+                    <strong>Main Entrance</strong>
+
+                </div>
+
+            </section>
+
+
+            <section class="sidebar-card">
+
+                <h3>Quick Links</h3>
+
+                <a href="scanner.html" class="sidebar-link">
+                    Scan Student QR
+                </a>
+
+                <a href="notifications.html" class="sidebar-link">
+                    Notifications
+                </a>
+
+                <a href="academic_calendar.html" class="sidebar-link">
+                    Academic Calendar
+                </a>
+
+            </section>
+
+        </aside>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 SmartAccess Campus |
+        Richfield Graduate Institute of Technology
+    </p>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartAccess Campus - Staff Dashboard</title>
+
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/dashboard.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-mark">R</div>
+
+        <div>
+            <h1>RICHFIELD</h1>
+            <span>SmartAccess Campus</span>
+        </div>
+    </div>
+
+    <nav>
+        <a href="staff_dashboard.html" class="active">Dashboard</a>
+        <a href="scanner.html">QR Scanner</a>
+        <a href="academic_calendar.html">Calendar</a>
+        <a href="reports.html">Reports</a>
+        <a href="notifications.html">Notifications</a>
+    </nav>
+
+</header>
+
+
+<main class="dashboard-page">
+
+    <section class="dashboard-header">
+
+        <div>
+            <p class="breadcrumb">
+                SmartAccess Campus / Staff
+            </p>
+
+            <h2>Staff Dashboard</h2>
+
+            <p>
+                Manage student access verification, review recent activity
+                and access staff tools.
+            </p>
+        </div>
+
+    </section>
+
+
+    <section class="dashboard-layout">
+
+        <div class="dashboard-main">
+
+            <section class="welcome-banner">
+
+                <div class="welcome-content">
+
+                    <p class="welcome-label">
+                        SMARTACCESS CAMPUS
+                    </p>
+
+                    <h3>
+                        Student Access Management
+                    </h3>
+
+                    <p>
+                        Verify student digital access cards, monitor access
+                        activity and manage campus entry efficiently.
+                    </p>
+
+                    <a href="scanner.html" class="banner-btn">
+                        Scan Student QR
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <section class="quick-section">
+
+                <div class="section-title">
+
+                    <h3>Quick Actions</h3>
+
+                </div>
+
+
+                <div class="quick-grid">
+
+                    <a href="scanner.html" class="quick-card">
+
+                        <div class="quick-icon">
+                            ▣
+                        </div>
+
+                        <div>
+                            <h4>QR Scanner</h4>
+                            <p>Scan and verify a student's digital access card.</p>
+                        </div>
+
+                    </a>
+
+
+                    <a href="reports.html" class="quick-card">
+
+                        <div class="quick-icon">
+                            ▤
+                        </div>
+
+                        <div>
+                            <h4>Reports</h4>
+                            <p>Review student access and verification activity.</p>
+                        </div>
+
+                    </a>
+
+
+                    <a href="academic_calendar.html" class="quick-card">
+
+                        <div class="quick-icon">
+                            31
+                        </div>
+
+                        <div>
+                            <h4>Academic Calendar</h4>
+                            <p>View upcoming academic events and important dates.</p>
+                        </div>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <section class="activity-section">
+
+                <div class="section-title">
+
+                    <div>
+                        <h3>Recent Verification Activity</h3>
+                        <p>Latest student access verification records.</p>
+                    </div>
+
+                    <a href="reports.html">
+                        View all
+                    </a>
+
+                </div>
+
+
+                <div class="activity-table-wrapper">
+
+                    <table class="activity-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>Student</th>
+                                <th>Student Number</th>
+                                <th>Location</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>
+                                    <div class="student-cell">
+                                        <span class="student-avatar">LM</span>
+
+                                        <span>
+                                            Lerato Molefe
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>ST2025001</td>
+                                <td>Main Entrance</td>
+                                <td>08:50</td>
+
+                                <td>
+                                    <span class="status granted">
+                                        Granted
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <div class="student-cell">
+                                        <span class="student-avatar">TN</span>
+
+                                        <span>
+                                            Thabo Nkosi
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>ST2025018</td>
+                                <td>Main Entrance</td>
+                                <td>08:47</td>
+
+                                <td>
+                                    <span class="status denied">
+                                        Denied
+                                    </span>
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <div class="student-cell">
+                                        <span class="student-avatar">KM</span>
+
+                                        <span>
+                                            Karabo Mokoena
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td>ST2025032</td>
+                                <td>Library Entrance</td>
+                                <td>08:41</td>
+
+                                <td>
+                                    <span class="status granted">
+                                        Granted
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <aside class="dashboard-sidebar">
+
+            <section class="sidebar-card">
+
+                <div class="sidebar-heading">
+
+                    <h3>Notifications</h3>
+
+                    <a href="notifications.html">
+                        View all
+                    </a>
+
+                </div>
+
+
+                <div class="notification-item">
+
+                    <span class="notification-dot alert"></span>
+
+                    <div>
+                        <h4>Access Denied</h4>
+
+                        <p>
+                            A student attempted entry using an inactive card.
+                        </p>
+
+                        <span class="notification-time">
+                            5 minutes ago
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="notification-item">
+
+                    <span class="notification-dot"></span>
+
+                    <div>
+                        <h4>Verification Completed</h4>
+
+                        <p>
+                            Student ST2025001 was successfully verified.
+                        </p>
+
+                        <span class="notification-time">
+                            12 minutes ago
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="notification-item">
+
+                    <span class="notification-dot"></span>
+
+                    <div>
+                        <h4>Academic Reminder</h4>
+
+                        <p>
+                            Upcoming examination schedule has been updated.
+                        </p>
+
+                        <span class="notification-time">
+                            1 hour ago
+                        </span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="sidebar-card system-card">
+
+                <h3>System Status</h3>
+
+                <div class="system-row">
+
+                    <span>QR Verification</span>
+
+                    <span class="system-status">
+                        Operational
+                    </span>
+
+                </div>
+
+
+                <div class="system-row">
+
+                    <span>Student Records</span>
+
+                    <span class="system-status">
+                        Connected
+                    </span>
+
+                </div>
+
+
+                <div class="system-row">
+
+                    <span>Notifications</span>
+
+                    <span class="system-status">
+                        Active
+                    </span>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 SmartAccess Campus |
+        Richfield Graduate Institute of Technology
+    </p>
+
+</footer>
+
+</body>
+</html>
