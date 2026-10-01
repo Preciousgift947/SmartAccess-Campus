@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, session, flash, abort
+from flask import Blueprint, render_template, redirect, url_for, session, flash, abort, jsonify, request
 import mysql.connector
 import bcrypt
 from functools import wraps
@@ -183,3 +183,116 @@ def logout():
     return redirect(
         url_for('auth.login')
     )
+
+
+# ============================================
+# API ENDPOINTS
+# ============================================
+
+@auth_bp.route('/api/login', methods=['POST'])
+def api_login():
+    data = request.get_json()
+    identifier = data.get('identifier', '').strip()
+    password = data.get('password', '')
+
+    if not identifier or not password:
+        return jsonify({
+            'success': False,
+            'message': 'Please provide identifier and password'
+        }), 400
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    # Check Admin Login
+    cursor.execute(
+        'SELECT * FROM ADMIN WHERE Email = %s',
+        (identifier,)
+    )
+
+    admin_user = cursor.fetchone()
+
+    if admin_user and bcrypt.checkpw(
+        password.encode('utf-8'),
+        admin_user['Password_Hash'].encode('utf-8')
+    ):
+        session.clear()
+        session['user_id'] = admin_user['Admin_ID']
+        session['user_name'] = (
+            f"{admin_user['First_Name']} "
+            f"{admin_user['Last_Name']}"
+        )
+        session['role'] = admin_user['Role']
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            'success': True,
+            'role': 'admin',
+            'user_name': session['user_name']
+        }), 200
+
+    # Check Student Login
+    cursor.execute(
+        'SELECT * FROM STUDENT WHERE Student_Number = %s',
+        (identifier,)
+    )
+
+    student_user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if student_user and bcrypt.checkpw(
+        password.encode('utf-8'),
+        student_user['Password_Hash'].encode('utf-8')
+    ):
+        session.clear()
+        session['student_id'] = student_user['Student_ID']
+        session['student_name'] = (
+            f"{student_user['First_Name']} "
+            f"{student_user['Last_Name']}"
+        )
+        session['user_name'] = session['student_name']
+        session['course'] = student_user['Course']
+        session['role'] = 'student'
+
+        return jsonify({
+            'success': True,
+            'role': 'student',
+            'user_name': session['user_name'],
+            'course': session['course']
+        }), 200
+
+    return jsonify({
+        'success': False,
+        'message': 'Invalid identifier or password'
+    }), 401
+
+
+@auth_bp.route('/api/profile')
+def api_profile():
+    if 'user_id' not in session and 'student_id' not in session:
+        return jsonify({
+            'success': False,
+            'message': 'Not authenticated'
+        }), 401
+
+    return jsonify({
+        'user_name': session.get('user_name'),
+        'role': session.get('role'),
+        'student_id': session.get('student_id'),
+        'user_id': session.get('user_id'),
+        'course': session.get('course')
+    }), 200
+
+
+@auth_bp.route('/api/logout', methods=['POST'])
+def api_logout():
+    session.clear()
+
+    return jsonify({
+        'success': True,
+        'message': 'Logged out successfully'
+    }), 200
