@@ -28,6 +28,19 @@ def login_required(f):
     return decorated_function
 
 
+def api_login_required(f):
+    from functools import wraps
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'student_id' not in session:
+            return jsonify({"success": False, "message": "Not logged in"}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 # ============================================
 # HOME - Redirect to Dashboard
 # ============================================
@@ -198,7 +211,7 @@ def notifications():
 # ============================================
 
 @student_bp.route('/api/dashboard')
-@login_required
+@api_login_required
 def api_dashboard():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -231,7 +244,7 @@ def api_dashboard():
 
 
 @student_bp.route('/api/digital_id')
-@login_required
+@api_login_required
 def api_digital_id():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -257,7 +270,7 @@ def api_digital_id():
 
 
 @student_bp.route('/api/attendance')
-@login_required
+@api_login_required
 def api_attendance():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -286,7 +299,7 @@ def api_attendance():
 
 
 @student_bp.route('/api/notifications')
-@login_required
+@api_login_required
 def api_notifications():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
