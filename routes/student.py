@@ -279,7 +279,7 @@ def api_attendance():
         SELECT a.Attendance_ID,
                a.Attendance_Date,
                a.Status,
-               a.Scan_Time,
+               CAST(a.Scan_Time AS CHAR) AS Scan_Time,
                a.Gate_Location,
                m.Module_Name,
                m.Module_Code
