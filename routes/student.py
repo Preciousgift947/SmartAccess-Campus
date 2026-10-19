@@ -250,7 +250,16 @@ def api_digital_id():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute('''
-        SELECT s.*,
+        SELECT s.Student_ID,
+               s.First_Name,
+               s.Last_Name,
+               s.Student_Number,
+               s.Email,
+               s.Phone_Number,
+               s.Photo_URL,
+               s.Course,
+               s.Faculty,
+               s.Registration_Date,
                dac.Card_Status,
                dac.Expiry_Date,
                dac.Issue_Date,
