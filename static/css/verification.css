@@ -1,0 +1,350 @@
+.verification-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.student-card,
+.access-panel,
+.module-card,
+.invalid-card {
+    background: #ffffff;
+    border: 1px solid #dbe3ee;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(11, 58, 120, 0.08);
+}
+
+.student-card {
+    overflow: hidden;
+}
+
+.verification-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 24px;
+    background: #eaf8ef;
+    border-bottom: 1px solid #cfead8;
+}
+
+.verification-banner.denied {
+    background: #fdeeed;
+    border-bottom-color: #efc7c3;
+}
+
+.verification-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #1f9d55;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.verification-banner.denied .verification-icon {
+    background: #e5483f;
+}
+
+.verification-banner h3 {
+    color: #166534;
+    margin-bottom: 4px;
+}
+
+.verification-banner.denied h3 {
+    color: #b42318;
+}
+
+.verification-banner p {
+    color: #4b6b57;
+    font-size: 14px;
+}
+
+.verification-banner.denied p {
+    color: #7a3d38;
+}
+
+.student-profile {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 26px;
+    border-bottom: 1px solid #e6ebf1;
+}
+
+.student-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #0b3a78;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.student-name {
+    flex: 1;
+}
+
+.student-name h3 {
+    color: #0b3a78;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.student-name p {
+    color: #6b7280;
+}
+
+.active-badge {
+    background: #eaf8ef;
+    color: #15803d;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.active-badge.expired,
+.active-badge.suspended,
+.active-badge.revoked {
+    background: #fdeeed;
+    color: #b42318;
+}
+
+.student-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 8px 26px 26px;
+}
+
+.detail-item {
+    padding: 18px 0;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.detail-item:nth-child(odd) {
+    padding-right: 24px;
+}
+
+.detail-label {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.detail-item strong {
+    display: block;
+    color: #17375e;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.access-panel {
+    padding: 24px;
+}
+
+.access-panel h3 {
+    color: #0b3a78;
+    margin-bottom: 20px;
+    font-size: 21px;
+}
+
+.access-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.access-item span {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.access-item strong {
+    color: #17375e;
+    text-align: right;
+}
+
+.success-text {
+    color: #15803d !important;
+}
+
+.danger-text {
+    color: #b42318 !important;
+}
+
+.confirm-btn {
+    width: 100%;
+    margin-top: 22px;
+    padding: 12px 20px;
+    background: #e5483f;
+    color: #ffffff;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.confirm-btn:hover {
+    background: #cf3f37;
+}
+
+.confirm-btn:disabled {
+    background: #aeb7c2;
+    cursor: not-allowed;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    color: #0f5fb3;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.module-section {
+    margin-top: 36px;
+}
+
+.section-title h3 {
+    color: #0b3a78;
+    margin-bottom: 16px;
+    font-size: 21px;
+}
+
+.module-card {
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: 2fr repeat(3, 1fr);
+    gap: 20px;
+    align-items: center;
+}
+
+.module-code {
+    display: inline-block;
+    background: #eef5ff;
+    color: #0f5fb3;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.module-card h4 {
+    color: #17375e;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+.module-card p {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.module-meta span {
+    display: block;
+    color: #6b7280;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.module-meta strong {
+    color: #17375e;
+}
+
+.invalid-section {
+    display: none;
+}
+
+.invalid-card {
+    max-width: 620px;
+    margin: 40px auto;
+    padding: 40px;
+    text-align: center;
+}
+
+.invalid-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #fdeeed;
+    color: #e5483f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-weight: bold;
+}
+
+.invalid-card h3 {
+    color: #0b3a78;
+    margin-bottom: 10px;
+    font-size: 23px;
+}
+
+.invalid-card p {
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.invalid-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #e5483f;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 7px;
+}
+
+.invalid-btn:hover {
+    background: #cf3f37;
+}
+
+@media (max-width: 900px) {
+    .verification-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .module-card {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .student-profile {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .student-details {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-item:nth-child(odd) {
+        padding-right: 0;
+    }
+
+    .module-card {
+        grid-template-columns: 1fr;
+    }
+}

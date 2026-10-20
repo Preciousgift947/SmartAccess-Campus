@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartAccess Campus | Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-brand">
+      <div class="brand-mark">SA</div>
+      <h1>SmartAccess Campus</h1>
+      <p>Digital Student Access & Academic Management System</p>
+      <div class="login-feature-list">
+        <span>✓ Digital student access</span>
+        <span>✓ QR-code verification</span>
+        <span>✓ Attendance tracking</span>
+        <span>✓ Academic reminders</span>
+      </div>
+    </section>
+
+    <section class="login-card">
+      <div class="mobile-brand">SmartAccess Campus</div>
+      <h2>Welcome back</h2>
+      <p class="muted">Sign in to continue to your campus account.</p>
+
+      <form id="loginForm">
+        <label for="email">Email address</label>
+        <input id="email" type="email" placeholder="student@richfield.ac.za" required>
+
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter password" required>
+
+        <label for="role">Login as</label>
+        <select id="role">
+          <option value="student">Student</option>
+          <option value="staff">Security / Staff</option>
+        </select>
+
+        <button class="btn primary full" type="submit">Sign In</button>
+      </form>
+
+      <p class="demo-note">Demo: any valid email/password works.</p>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
