@@ -342,3 +342,83 @@ def api_notifications():
     conn.close()
 
     return jsonify({'notifications': notifications})
+
+# ============================================
+# CALENDAR
+# ============================================
+
+@student_bp.route('/calendar')
+@login_required
+def calendar():
+    return render_template('academic_calendar.html')
+
+
+@student_bp.route('/api/calendar')
+@api_login_required
+def api_calendar():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute('''
+        SELECT ae.Event_ID,
+               m.Module_Name,
+               m.Module_Code,
+               ae.Event_Type,
+               ae.Event_Date,
+               ae.Event_Description
+        FROM ACADEMIC_EVENT ae
+        JOIN MODULE m
+            ON m.Module_ID = ae.Module_ID
+        JOIN STUDENT_MODULE sm
+            ON sm.Module_ID = m.Module_ID
+        WHERE sm.Student_ID = %s
+        ORDER BY ae.Event_Date
+    ''', (session['student_id'],))
+
+    events = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'events': events})
+
+
+# ============================================
+# PROFILE
+# ============================================
+
+@student_bp.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+
+@student_bp.route('/api/student_profile')
+@api_login_required
+def api_student_profile():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute('''
+        SELECT Student_ID,
+               First_Name,
+               Last_Name,
+               Student_Number,
+               Email,
+               Phone_Number,
+               Course,
+               Faculty,
+               Registration_Date
+        FROM STUDENT
+        WHERE Student_ID = %s
+    ''', (session['student_id'],))
+
+    student = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not student:
+        return jsonify({'success': False, 'message': 'Student not found'}), 404
+
+    return jsonify(student)
