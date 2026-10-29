@@ -64,3 +64,62 @@ def api_reports():
     conn.close()
 
     return jsonify({'modules': rows})
+
+
+@staff_bp.route('/api/staff_profile')
+@api_staff_required
+def api_staff_profile():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute('''
+        SELECT Admin_ID,
+               First_Name,
+               Last_Name,
+               Email,
+               Role
+        FROM ADMIN
+        WHERE Admin_ID = %s
+    ''', (session['user_id'],))
+
+    staff = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not staff:
+        return jsonify({'success': False, 'message': 'Staff not found'}), 404
+
+    return jsonify(staff)
+
+
+@staff_bp.route('/api/scans')
+@api_staff_required
+def api_scans():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute('''
+        SELECT a.Attendance_ID,
+               s.Student_Number,
+               CONCAT(s.First_Name, ' ', s.Last_Name) AS Student_Name,
+               m.Module_Code,
+               a.Attendance_Date,
+               CAST(a.Scan_Time AS CHAR) AS Scan_Time,
+               a.Status,
+               a.Gate_Location
+        FROM ATTENDANCE a
+        JOIN STUDENT s
+            ON s.Student_ID = a.Student_ID
+        JOIN MODULE m
+            ON m.Module_ID = a.Module_ID
+        ORDER BY a.Attendance_Date DESC, a.Scan_Time DESC
+        LIMIT 100
+    ''')
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'scans': rows})
