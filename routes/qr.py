@@ -65,12 +65,13 @@ def generate_qr():
         conn.close()
         return jsonify({"msg": "Student not found"}), 404
 
+    # ── Existing card of ANY status ──
     cursor.execute(
         '''
         SELECT Card_ID, Expiry_Date, Card_Status
-        FROM digital_access_card
-        WHERE Student_ID = %s AND Card_Status = 'Active'
-        ORDER BY Expiry_Date DESC
+        FROM DIGITAL_ACCESS_CARD
+        WHERE Student_ID = %s
+        ORDER BY Card_ID DESC
         LIMIT 1
         ''',
         (student_id,)
@@ -78,32 +79,50 @@ def generate_qr():
     card = cursor.fetchone()
 
     today = datetime.utcnow().date()
+    new_expiry = today + timedelta(days=365)
 
-    if not card or card['Expiry_Date'] < today:
-        expiry = today + timedelta(days=365)
+    if card:
+        if card['Card_Status'] in ('Suspended', 'Revoked'):
+            cursor.close()
+            conn.close()
+            return jsonify({
+                "msg": f"Your access card is {card['Card_Status'].lower()}. "
+                       f"Please contact administration."
+            }), 403
+
         cursor.execute(
             '''
-            INSERT INTO digital_access_card
+            UPDATE DIGITAL_ACCESS_CARD
+            SET Card_Status = 'Active',
+                Issue_Date = %s,
+                Expiry_Date = %s
+            WHERE Card_ID = %s
+            ''',
+            (today, new_expiry, card['Card_ID'])
+        )
+        card_id = card['Card_ID']
+    else:
+        cursor.execute(
+            '''
+            INSERT INTO DIGITAL_ACCESS_CARD
                 (Student_ID, QR_Code_Data, Issue_Date, Expiry_Date, Card_Status)
             VALUES (%s, %s, %s, %s, 'Active')
             ''',
-            (student_id, '', today, expiry)
+            (student_id, '', today, new_expiry)
         )
-        conn.commit()
+        card_id = cursor.lastrowid
 
-    # Generate QR (returns token, uuid, image)
     qr_result = generate_base64_qr(student_id, student['Student_Number'])
 
-    # Persist the UUID + issue timestamp so /verify can validate later
     cursor.execute(
         '''
-        UPDATE digital_access_card
+        UPDATE DIGITAL_ACCESS_CARD
         SET QR_Token = %s,
             Token_Issued_At = %s,
             QR_Code_Data = %s
-        WHERE Student_ID = %s AND Card_Status = 'Active'
+        WHERE Card_ID = %s
         ''',
-        (qr_result['uuid'], datetime.utcnow(), qr_result['token'], student_id)
+        (qr_result['uuid'], datetime.utcnow(), qr_result['token'], card_id)
     )
     conn.commit()
 
@@ -117,8 +136,6 @@ def generate_qr():
             "token": qr_result['token'],
         }
     }), 200
-
-
 # ============================================
 # VERIFY QR  (public — security scanner calls it)
 # ============================================
@@ -153,7 +170,7 @@ def verify_qr():
                s.First_Name,
                s.Last_Name,
                s.Course
-        FROM digital_access_card c
+        FROM DIGITAL_ACCESS_CARD c
         JOIN STUDENT s ON s.Student_ID = c.Student_ID
         WHERE c.Student_ID = %s AND c.Card_Status = 'Active'
         ORDER BY c.Expiry_Date DESC
@@ -177,7 +194,7 @@ def verify_qr():
     # ── CARD EXPIRY ──
     if row['Expiry_Date'] < datetime.utcnow().date():
         cursor.execute(
-            "UPDATE digital_access_card SET Card_Status = 'Expired' WHERE Card_ID = %s",
+            "UPDATE DIGITAL_ACCESS_CARD SET Card_Status = 'Expired' WHERE Card_ID = %s",
             (row['Card_ID'],)
         )
         conn.commit()
@@ -222,7 +239,7 @@ def get_card_status():
     cursor.execute(
         '''
         SELECT Card_ID, Issue_Date, Expiry_Date, Card_Status
-        FROM digital_access_card
+        FROM DIGITAL_ACCESS_CARD
         WHERE Student_ID = %s
         ORDER BY Expiry_Date DESC
         LIMIT 1
