@@ -192,8 +192,8 @@ def logout():
 @auth_bp.route('/api/login', methods=['POST'])
 def api_login():
     data = request.get_json(silent=True) or {}
-    identifier = data.get('identifier', '').strip()
-    password = data.get('password', '')
+    identifier = str (data.get('identifier') or '').strip()
+    password = str (data.get('password') or '')
 
     if not identifier or not password:
         return jsonify({
