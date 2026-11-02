@@ -54,46 +54,27 @@
     <section class="report-summary">
 
         <div class="summary-card">
-
             <span>Total Scans</span>
-
-            <strong>124</strong>
-
-            <p>Recorded access attempts</p>
-
+            <strong id="totalScans">0</strong>
+            <p>Recorded attendance records</p>
         </div>
 
-
         <div class="summary-card">
-
             <span>Access Granted</span>
-
-            <strong>112</strong>
-
-            <p>Successful verifications</p>
-
+            <strong id="grantedCount">0</strong>
+            <p>On-time (Present) scans</p>
         </div>
 
-
         <div class="summary-card">
-
-            <span>Access Denied</span>
-
-            <strong>12</strong>
-
-            <p>Failed or inactive cards</p>
-
+            <span>Late</span>
+            <strong id="lateCount">0</strong>
+            <p>Late scans</p>
         </div>
 
-
         <div class="summary-card">
-
             <span>Active Locations</span>
-
-            <strong>3</strong>
-
+            <strong id="activeLocations">0</strong>
             <p>Campus scanning points</p>
-
         </div>
 
     </section>
@@ -128,63 +109,10 @@
                         </tr>
                     </thead>
 
-                    <tbody>
-
+                    <tbody id="activityBody">
                         <tr>
-                            <td>Lerato Molefe</td>
-                            <td>ST2025001</td>
-                            <td>Main Entrance</td>
-                            <td>24 Aug 2026</td>
-                            <td>08:50</td>
-                            <td>
-                                <span class="report-status granted">
-                                    Granted
-                                </span>
-                            </td>
+                            <td colspan="6">Loading...</td>
                         </tr>
-
-
-                        <tr>
-                            <td>Thabo Nkosi</td>
-                            <td>ST2025018</td>
-                            <td>Main Entrance</td>
-                            <td>24 Aug 2026</td>
-                            <td>08:47</td>
-                            <td>
-                                <span class="report-status denied">
-                                    Denied
-                                </span>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>Karabo Mokoena</td>
-                            <td>ST2025032</td>
-                            <td>Library Entrance</td>
-                            <td>24 Aug 2026</td>
-                            <td>08:41</td>
-                            <td>
-                                <span class="report-status granted">
-                                    Granted
-                                </span>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td>Neo Maseko</td>
-                            <td>ST2025045</td>
-                            <td>Computer Lab</td>
-                            <td>24 Aug 2026</td>
-                            <td>08:32</td>
-                            <td>
-                                <span class="report-status granted">
-                                    Granted
-                                </span>
-                            </td>
-                        </tr>
-
                     </tbody>
 
                 </table>
@@ -201,29 +129,18 @@
                 <h3>Report Summary</h3>
 
                 <div class="summary-row">
-
                     <span>Success Rate</span>
-
-                    <strong>90%</strong>
-
+                    <strong id="successRate">0%</strong>
                 </div>
 
-
                 <div class="summary-row">
-
-                    <span>Denied Rate</span>
-
-                    <strong>10%</strong>
-
+                    <span>Late Rate</span>
+                    <strong id="lateRate">0%</strong>
                 </div>
 
-
                 <div class="summary-row">
-
                     <span>Busiest Location</span>
-
-                    <strong>Main Entrance</strong>
-
+                    <strong id="busiestLocation">—</strong>
                 </div>
 
             </section>
@@ -262,6 +179,9 @@
     </p>
 
 </footer>
+
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='reports.js') }}"></script>
 
 </body>
 </html>
