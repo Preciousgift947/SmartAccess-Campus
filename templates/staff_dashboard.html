@@ -173,82 +173,10 @@
 
                         </thead>
 
-                        <tbody>
-
+                        <tbody id="recentActivityBody">
                             <tr>
-
-                                <td>
-                                    <div class="student-cell">
-                                        <span class="student-avatar">LM</span>
-
-                                        <span>
-                                            Lerato Molefe
-                                        </span>
-                                    </div>
-                                </td>
-
-                                <td>ST2025001</td>
-                                <td>Main Entrance</td>
-                                <td>08:50</td>
-
-                                <td>
-                                    <span class="status granted">
-                                        Granted
-                                    </span>
-                                </td>
-
+                                <td colspan="5">Loading...</td>
                             </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    <div class="student-cell">
-                                        <span class="student-avatar">TN</span>
-
-                                        <span>
-                                            Thabo Nkosi
-                                        </span>
-                                    </div>
-                                </td>
-
-                                <td>ST2025018</td>
-                                <td>Main Entrance</td>
-                                <td>08:47</td>
-
-                                <td>
-                                    <span class="status denied">
-                                        Denied
-                                    </span>
-                                </td>
-
-                            </tr>
-
-
-                            <tr>
-
-                                <td>
-                                    <div class="student-cell">
-                                        <span class="student-avatar">KM</span>
-
-                                        <span>
-                                            Karabo Mokoena
-                                        </span>
-                                    </div>
-                                </td>
-
-                                <td>ST2025032</td>
-                                <td>Library Entrance</td>
-                                <td>08:41</td>
-
-                                <td>
-                                    <span class="status granted">
-                                        Granted
-                                    </span>
-                                </td>
-
-                            </tr>
-
                         </tbody>
 
                     </table>
@@ -387,6 +315,9 @@
     </p>
 
 </footer>
+
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='staff_dashboard.js') }}"></script>
 
 </body>
 </html>
