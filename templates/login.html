@@ -38,7 +38,7 @@
         Sign in to continue to your campus account.
       </p>
 
-      <form method="POST" action="{{ url_for('auth.login') }}">
+      <form id="login-form" method="POST" action="{{ url_for('auth.login') }}">
 
         {{ form.hidden_tag() }}
 
@@ -97,6 +97,7 @@
     </section>
 
   </main>
-
+   <script src="{{ url_for('static', filename='api.js') }}"></script>
+   <script src="{{ url_for('static', filename='login.js') }}"></script>
 </body>
 </html>

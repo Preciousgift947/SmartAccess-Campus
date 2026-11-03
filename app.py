@@ -3,6 +3,7 @@ from datetime import timedelta, datetime, timezone
 from config import Config
 from routes.auth import auth_bp
 from routes.student import student_bp
+from routes.staff import staff_bp
 from routes.qr import qr_bp
 
 app = Flask(__name__)
@@ -16,6 +17,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(student_bp)
+app.register_blueprint(staff_bp)
 app.register_blueprint(qr_bp)
 
 # Session timeout handler
