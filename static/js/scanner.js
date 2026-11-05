@@ -253,61 +253,90 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+async function submitScannedQR(qrValue) {
+    try {
+        const gateEl = document.getElementById('gate');
+        const res = await fetch('/api/qr/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                qr_data: qrValue,
+                gate_location: gateEl ? gateEl.value : 'Main Entrance'
+            })
+        });
 
-    function processQRCode(qrValue) {
-
-        scanning = false;
-
-
-        updateStatus(
-            "Verified",
-            "success"
-        );
-
-
-        updateMessage(
-            "QR code detected: " + qrValue,
-            "success"
-        );
-
-
-        scanLine.classList.remove("active");
-
-
-        setTimeout(function () {
-
-            window.location.href =
-                "verification.html?qr=" +
-                encodeURIComponent(qrValue);
-
-        }, 1000);
+        const data = await res.json();
+        showResult(res.status, data);
+        return { statusCode: res.status, data };
+    } catch (err) {
+        console.error(err);
+        showResult(0, { message: 'Network error. Please try again.' });
+        return { statusCode: 0, data: { message: 'Network error.' } };
     }
+}
 
+    function showResult(statusCode, data) {
+  const box = document.getElementById('scan-result');
+  if (!box) return;
 
-    demoScanBtn.addEventListener(
-        "click",
-        function () {
+  if (statusCode === 200 && data.status === 'Granted') {
+    const s = data.student || {};
+    box.className = 'scan-result success';
+    box.innerHTML = `
+      <h2> Access Granted</h2>
+      <p><strong>${s.name || 'Student'}</strong></p>
+      <p>${s.student_number || ''} — ${s.course || ''}</p>
+      <p class="muted">Attendance: ${data.attendance || 'Recorded'}</p>
+    `;
+  } else if (statusCode === 401) {
+    box.className = 'scan-result warning';
+    box.innerHTML = `<h2> ${data.message || 'Unauthorized'}</h2>
+      <p>Please log in as staff to scan.</p>`;
+  } else {
+    box.className = 'scan-result error';
+    box.innerHTML = `<h2>Access Denied</h2>
+      <p>${data.message || 'Unknown error'}</p>`;
+  }
+  box.style.display = 'block';
+}
 
-            updateStatus(
-                "Verified",
-                "success"
-            );
+async function processQRCode(qrValue) {
+    scanning = false;
+    scanLine.classList.remove("active");
 
+    updateStatus("Scanning", "scanning");
+    updateMessage("Sending QR to server for verification...");
 
-            updateMessage(
-                "Demo QR detected: QR0001",
-                "success"
-            );
+    const gateEl = document.getElementById('gate');
+    const gate = gateEl ? gateEl.value : 'Main Entrance';
+    const result = await submitScannedQR(qrValue);
 
+    sessionStorage.setItem('verifyResult', JSON.stringify({
+        statusCode: result.statusCode,
+        data: result.data,
+        qrRaw: qrValue,
+        gate: gate,
+        scannedAt: new Date().toLocaleTimeString()
+    }));
 
-            setTimeout(function () {
+    const ok = result.statusCode === 200 && result.data.status === 'Granted';
 
-                window.location.href =
-                    "verification.html?qr=QR0001";
-
-            }, 700);
-        }
+    updateStatus(ok ? "Verified" : "Denied", ok ? "success" : "error");
+    updateMessage(
+        ok ? "Access granted. Redirecting..."
+           : ((result.data && result.data.message) || "Access denied."),
+        ok ? "success" : "error"
     );
+
+    setTimeout(function () {
+        window.location.href = "/verification";
+    }, 1000);
+}
+
+// Demo scan button for testing (Dead code)
+demoScanBtn.addEventListener("click", function () {
+    processQRCode("QR0001");
+});
 
 
     qrUpload.addEventListener(

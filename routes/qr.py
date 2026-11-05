@@ -3,24 +3,32 @@ QR generation and verification routes for SmartAccess Campus.
 
 Endpoints:
   GET  /api/qr/generate  - student fetches their own QR (session required)
-  POST /api/qr/verify    - security staff verifies a scanned QR (public)
+  POST /api/qr/verify    - staff-only: security verifies a scanned QR
   GET  /api/qr/status    - student fetches their card status
 
 Token security: the UUID in the QR payload is stored on the card row at
 generation time. /verify rejects any token that doesn't match the stored
-value — this prevents forged or replayed tokens from granting access.
+value - this prevents forged or replayed tokens from granting access.
 """
-from flask import Blueprint, jsonify, request, session
+import logging
+from datetime import datetime, timedelta, timezone
+
 import mysql.connector
-from datetime import datetime, timedelta
+from flask import Blueprint, jsonify, request, session
 
 from config import Config
+from routes.staff import api_staff_required
 from utils.qr_utils import generate_base64_qr, decode_qr_token
 
 
 qr_bp = Blueprint('qr', __name__, url_prefix='/api/qr')
 
+logger = logging.getLogger(__name__)
+
 TOKEN_TTL_HOURS = 24
+
+# South African Standard Time (SAST = UTC+2, no DST)
+SAST = timezone(timedelta(hours=2))
 
 
 def get_db():
@@ -31,6 +39,10 @@ def get_db():
         database=Config.MYSQL_DB,
         port=Config.MYSQL_PORT
     )
+
+
+def _now_sast():
+    return datetime.now(SAST).replace(tzinfo=None)
 
 
 # ============================================
@@ -72,7 +84,7 @@ def generate_qr():
         )
         card = cursor.fetchone()
 
-        today = datetime.utcnow().date()
+        today = _now_sast().date()
         new_expiry = today + timedelta(days=365)
 
         if card:
@@ -114,7 +126,7 @@ def generate_qr():
                 QR_Code_Data = %s
             WHERE Card_ID = %s
             ''',
-            (qr_result['uuid'], datetime.utcnow(), qr_result['token'], card_id)
+            (qr_result['uuid'], _now_sast(), qr_result['token'], card_id)
         )
         conn.commit()
 
@@ -126,24 +138,29 @@ def generate_qr():
             }
         }), 200
 
-    except mysql.connector.Error as e:
+    except mysql.connector.Error:
         conn.rollback()
-        return jsonify({"message": f"Database error: {e}"}), 500
+        logger.exception("DB error in generate_qr")
+        return jsonify({"message": "Could not generate QR. Please try again."}), 500
     finally:
         cursor.close()
         conn.close()
 
 
 # ============================================
-# VERIFY QR  (public — security scanner calls it)
+# VERIFY QR  (staff only - security scanner calls it)
 # ============================================
 
 @qr_bp.route('/verify', methods=['POST'])
+@api_staff_required
 def verify_qr():
-    data = request.get_json(silent=True) or {}
-    qr_token = data.get('qr_data')
+    data = request.get_json(silent=True)
 
-    if not qr_token:
+    if not isinstance(data, dict):
+        return jsonify({"message": "Invalid request body"}), 400
+
+    qr_token = data.get('qr_data')
+    if not qr_token or not isinstance(qr_token, str):
         return jsonify({"message": "No QR data provided"}), 400
 
     parsed = decode_qr_token(qr_token)
@@ -167,7 +184,9 @@ def verify_qr():
                    s.Student_Number,
                    s.First_Name,
                    s.Last_Name,
-                   s.Course
+                   s.Email,
+                   s.Course,
+                   s.Faculty
             FROM DIGITAL_ACCESS_CARD c
             JOIN STUDENT s ON s.Student_ID = c.Student_ID
             WHERE c.Student_ID = %s AND c.Card_Status = 'Active'
@@ -181,12 +200,13 @@ def verify_qr():
         if not row:
             return jsonify({"message": "No active card found"}), 403
 
-        # ── TOKEN VALIDATION ──
+        # TOKEN VALIDATION
         if not row['QR_Token'] or row['QR_Token'] != token_uuid:
             return jsonify({"message": "Invalid or revoked QR token"}), 401
 
-        # ── CARD EXPIRY ──
-        if row['Expiry_Date'] < datetime.utcnow().date():
+        # CARD EXPIRY
+        today = _now_sast().date()
+        if row['Expiry_Date'] < today:
             cursor.execute(
                 "UPDATE DIGITAL_ACCESS_CARD SET Card_Status = 'Expired' WHERE Card_ID = %s",
                 (row['Card_ID'],)
@@ -194,18 +214,21 @@ def verify_qr():
             conn.commit()
             return jsonify({"message": "Card expired"}), 403
 
-        # ── TOKEN TTL ──
+        # TOKEN TTL
         if TOKEN_TTL_HOURS > 0 and row['Token_Issued_At']:
-            age = datetime.utcnow() - row['Token_Issued_At']
+            age = _now_sast() - row['Token_Issued_At']
             if age > timedelta(hours=TOKEN_TTL_HOURS):
                 return jsonify({"message": "QR token expired, please regenerate"}), 401
 
-        # ── Record attendance (module is first enrolled) ──
+        # Get first enrolled module for module display
         cursor.execute(
             '''
-            SELECT Module_ID FROM STUDENT_MODULE
-            WHERE Student_ID = %s
-            ORDER BY Module_ID
+            SELECT m.Module_ID, m.Module_Code, m.Module_Name, m.Venue, m.Day,
+                   CAST(m.Time AS CHAR) AS Module_Time
+            FROM STUDENT_MODULE sm
+            JOIN MODULE m ON m.Module_ID = sm.Module_ID
+            WHERE sm.Student_ID = %s
+            ORDER BY m.Module_ID
             LIMIT 1
             ''',
             (student_id,)
@@ -213,37 +236,68 @@ def verify_qr():
         module_row = cursor.fetchone()
         module_id = module_row['Module_ID'] if module_row else None
 
+        attendance_status = "Recorded"
+
         if module_id:
-            now = datetime.utcnow()
+            # DUPLICATE CHECK: already scanned today for this module?
             cursor.execute(
                 '''
-                INSERT INTO ATTENDANCE
-                    (Student_ID, Module_ID, Attendance_Date, Status, Scan_Time, Gate_Location)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                SELECT Attendance_ID FROM ATTENDANCE
+                WHERE Student_ID = %s AND Module_ID = %s AND Attendance_Date = %s
+                LIMIT 1
                 ''',
-                (
-                    student_id,
-                    module_id,
-                    now.date(),
-                    'Present',
-                    now.time(),
-                    data.get('gate_location', 'Main Entrance')
-                )
+                (student_id, module_id, today)
             )
-            conn.commit()
+            existing = cursor.fetchone()
+
+            if existing:
+                attendance_status = "Already recorded today"
+            else:
+                now = _now_sast()
+                cursor.execute(
+                    '''
+                    INSERT INTO ATTENDANCE
+                        (Student_ID, Module_ID, Attendance_Date, Status, Scan_Time, Gate_Location)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    ''',
+                    (
+                        student_id,
+                        module_id,
+                        now.date(),
+                        'Present',
+                        now.time(),
+                        data.get('gate_location') or 'Main Entrance'
+                    )
+                )
+                conn.commit()
 
         return jsonify({
             "status": "Granted",
+            "attendance": attendance_status,
             "student": {
                 "name": f"{row['First_Name']} {row['Last_Name']}",
+                "first_name": row['First_Name'],
+                "last_name": row['Last_Name'],
                 "student_number": row['Student_Number'],
+                "email": row['Email'],
                 "course": row['Course'],
-            }
+                "faculty": row['Faculty'],
+                "expiry_date": row['Expiry_Date'].isoformat(),
+                "card_status": row['Card_Status'],
+            },
+            "module": {
+                "code": module_row['Module_Code'] if module_row else None,
+                "name": module_row['Module_Name'] if module_row else None,
+                "venue": module_row['Venue'] if module_row else None,
+                "day": module_row['Day'] if module_row else None,
+                "time": module_row['Module_Time'] if module_row else None,
+            } if module_row else None,
         }), 200
 
-    except mysql.connector.Error as e:
+    except mysql.connector.Error:
         conn.rollback()
-        return jsonify({"message": f"Database error: {e}"}), 500
+        logger.exception("DB error in verify_qr")
+        return jsonify({"message": "Could not verify QR. Please try again."}), 500
     finally:
         cursor.close()
         conn.close()
@@ -284,11 +338,12 @@ def get_card_status():
             "status": card['Card_Status'],
             "issue_date": card['Issue_Date'].isoformat(),
             "expiry_date": card['Expiry_Date'].isoformat(),
-            "days_until_expiry": (card['Expiry_Date'] - datetime.utcnow().date()).days,
+            "days_until_expiry": (card['Expiry_Date'] - _now_sast().date()).days,
         }), 200
 
-    except mysql.connector.Error as e:
-        return jsonify({"message": f"Database error: {e}"}), 500
+    except mysql.connector.Error:
+        logger.exception("DB error in get_card_status")
+        return jsonify({"message": "Could not fetch card status. Please try again."}), 500
     finally:
         cursor.close()
         conn.close()
