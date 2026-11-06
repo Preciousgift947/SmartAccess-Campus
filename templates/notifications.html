@@ -24,11 +24,12 @@
     </div>
 
     <nav>
-        <a href="staff_dashboard.html">Dashboard</a>
-        <a href="scanner.html">QR Scanner</a>
-        <a href="academic_calendar.html">Calendar</a>
-        <a href="reports.html">Reports</a>
-        <a href="notifications.html" class="active">Notifications</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/digital_id">Digital ID</a>
+        <a href="/attendance">Attendance</a>
+        <a href="/calendar">Calendar</a>
+        <a href="/profile">Profile</a>
+        <a href="/notifications" class="active">Notifications</a>
     </nav>
 
 </header>
@@ -39,13 +40,13 @@
     <section class="page-heading">
 
         <p class="breadcrumb">
-            SmartAccess Campus / Staff / Notifications
+            SmartAccess Campus / Student / Notifications
         </p>
 
         <h2>Notifications</h2>
 
         <p>
-            Review access alerts, verification updates and academic reminders.
+            Important academic and campus updates.
         </p>
 
     </section>
@@ -54,62 +55,27 @@
     <section class="notification-summary">
 
         <div class="summary-card">
-
-            <span class="summary-label">
-                Total Notifications
-            </span>
-
-            <strong>6</strong>
-
-            <p>
-                Recent staff and system updates
-            </p>
-
+            <span class="summary-label">Total Notifications</span>
+            <strong id="totalCount">0</strong>
+            <p>All updates for your account</p>
         </div>
 
-
         <div class="summary-card">
-
-            <span class="summary-label">
-                Access Alerts
-            </span>
-
-            <strong>2</strong>
-
-            <p>
-                Access-related notifications
-            </p>
-
+            <span class="summary-label">Academic Reminders</span>
+            <strong id="academicCount">0</strong>
+            <p>Upcoming academic events</p>
         </div>
 
-
         <div class="summary-card">
-
-            <span class="summary-label">
-                Verification Updates
-            </span>
-
-            <strong>2</strong>
-
-            <p>
-                Recent verification activity
-            </p>
-
+            <span class="summary-label">System Updates</span>
+            <strong id="systemCount">0</strong>
+            <p>Campus system messages</p>
         </div>
 
-
         <div class="summary-card">
-
-            <span class="summary-label">
-                Academic Reminders
-            </span>
-
-            <strong>2</strong>
-
-            <p>
-                Upcoming academic events
-            </p>
-
+            <span class="summary-label">Unread</span>
+            <strong id="unreadCount">0</strong>
+            <p>New since your last visit</p>
         </div>
 
     </section>
@@ -131,243 +97,8 @@
 
             </div>
 
-
-            <div class="notification-entry unread">
-
-                <div class="notification-icon alert">
-                    !
-                </div>
-
-                <div class="notification-content">
-
-                    <div class="notification-top">
-
-                        <div>
-                            <span class="notification-type">
-                                Access Alert
-                            </span>
-
-                            <h4>
-                                Access denied for inactive digital card
-                            </h4>
-                        </div>
-
-                        <span class="notification-date">
-                            Today, 08:47
-                        </span>
-
-                    </div>
-
-                    <p>
-                        Student ST2025018 attempted entry at the Main Entrance
-                        using an inactive SmartAccess digital card.
-                    </p>
-
-                    <span class="notification-meta">
-                        Main Entrance
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="notification-entry unread">
-
-                <div class="notification-icon success">
-                    ✓
-                </div>
-
-                <div class="notification-content">
-
-                    <div class="notification-top">
-
-                        <div>
-                            <span class="notification-type">
-                                Verification
-                            </span>
-
-                            <h4>
-                                Student successfully verified
-                            </h4>
-                        </div>
-
-                        <span class="notification-date">
-                            Today, 08:50
-                        </span>
-
-                    </div>
-
-                    <p>
-                        Lerato Molefe, ST2025001, was successfully verified
-                        and granted access.
-                    </p>
-
-                    <span class="notification-meta">
-                        Main Entrance
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="notification-entry">
-
-                <div class="notification-icon academic">
-                    31
-                </div>
-
-                <div class="notification-content">
-
-                    <div class="notification-top">
-
-                        <div>
-                            <span class="notification-type">
-                                Academic Reminder
-                            </span>
-
-                            <h4>
-                                Upcoming Software Development examination
-                            </h4>
-                        </div>
-
-                        <span class="notification-date">
-                            Today, 07:30
-                        </span>
-
-                    </div>
-
-                    <p>
-                        The Software Development midterm examination is
-                        scheduled for 4 September 2026.
-                    </p>
-
-                    <span class="notification-meta">
-                        Academic Calendar
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="notification-entry">
-
-                <div class="notification-icon info">
-                    i
-                </div>
-
-                <div class="notification-content">
-
-                    <div class="notification-top">
-
-                        <div>
-                            <span class="notification-type">
-                                System Update
-                            </span>
-
-                            <h4>
-                                Student records synchronised
-                            </h4>
-                        </div>
-
-                        <span class="notification-date">
-                            Yesterday, 16:20
-                        </span>
-
-                    </div>
-
-                    <p>
-                        SmartAccess student records were successfully refreshed.
-                    </p>
-
-                    <span class="notification-meta">
-                        System
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="notification-entry">
-
-                <div class="notification-icon academic">
-                    31
-                </div>
-
-                <div class="notification-content">
-
-                    <div class="notification-top">
-
-                        <div>
-                            <span class="notification-type">
-                                Academic Reminder
-                            </span>
-
-                            <h4>
-                                Cybersecurity assignment due soon
-                            </h4>
-                        </div>
-
-                        <span class="notification-date">
-                            Yesterday, 10:15
-                        </span>
-
-                    </div>
-
-                    <p>
-                        The Cybersecurity Risk Assessment assignment is due on
-                        3 September 2026.
-                    </p>
-
-                    <span class="notification-meta">
-                        Academic Calendar
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="notification-entry">
-
-                <div class="notification-icon success">
-                    ✓
-                </div>
-
-                <div class="notification-content">
-
-                    <div class="notification-top">
-
-                        <div>
-                            <span class="notification-type">
-                                Verification
-                            </span>
-
-                            <h4>
-                                Student access confirmed
-                            </h4>
-                        </div>
-
-                        <span class="notification-date">
-                            Yesterday, 08:41
-                        </span>
-
-                    </div>
-
-                    <p>
-                        Karabo Mokoena, ST2025032, was successfully verified
-                        at the Library Entrance.
-                    </p>
-
-                    <span class="notification-meta">
-                        Library Entrance
-                    </span>
-
-                </div>
-
+            <div id="notificationList">
+                <p>Loading...</p>
             </div>
 
         </div>
@@ -380,38 +111,19 @@
                 <h3>Notification Types</h3>
 
                 <div class="type-row">
-
-                    <div>
-                        <span class="type-dot alert-dot"></span>
-                        <span>Access Alerts</span>
-                    </div>
-
-                    <strong>2</strong>
-
-                </div>
-
-
-                <div class="type-row">
-
-                    <div>
-                        <span class="type-dot verification-dot"></span>
-                        <span>Verification</span>
-                    </div>
-
-                    <strong>2</strong>
-
-                </div>
-
-
-                <div class="type-row">
-
                     <div>
                         <span class="type-dot academic-dot"></span>
                         <span>Academic</span>
                     </div>
+                    <strong id="academicTypeCount">0</strong>
+                </div>
 
-                    <strong>2</strong>
-
+                <div class="type-row">
+                    <div>
+                        <span class="type-dot verification-dot"></span>
+                        <span>System</span>
+                    </div>
+                    <strong id="systemTypeCount">0</strong>
                 </div>
 
             </section>
@@ -421,16 +133,16 @@
 
                 <h3>Quick Links</h3>
 
-                <a href="scanner.html" class="sidebar-link">
-                    Scan Student QR
+                <a href="/digital_id" class="sidebar-link">
+                    Digital ID Card
                 </a>
 
-                <a href="academic_calendar.html" class="sidebar-link">
+                <a href="/attendance" class="sidebar-link">
+                    Attendance
+                </a>
+
+                <a href="/calendar" class="sidebar-link">
                     Academic Calendar
-                </a>
-
-                <a href="reports.html" class="sidebar-link">
-                    View Reports
                 </a>
 
             </section>
@@ -450,6 +162,9 @@
     </p>
 
 </footer>
+
+<script src="{{ url_for('static', filename='api.js') }}"></script>
+<script src="{{ url_for('static', filename='notifications.js') }}"></script>
 
 </body>
 </html>
