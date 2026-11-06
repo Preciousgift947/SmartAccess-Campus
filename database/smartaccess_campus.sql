@@ -50,6 +50,8 @@ CREATE TABLE DIGITAL_ACCESS_CARD (
     Card_ID INT NOT NULL AUTO_INCREMENT,
     Student_ID INT NOT NULL,
     QR_Code_Data TEXT NOT NULL,
+    QR_Token VARCHAR(64) UNIQUE NULL,
+    Token_Issued_At DATETIME NULL,
     Issue_Date DATE NOT NULL DEFAULT (CURRENT_DATE),
     Expiry_Date DATE NOT NULL,
     Card_Status ENUM('Active','Expired','Suspended','Revoked')
