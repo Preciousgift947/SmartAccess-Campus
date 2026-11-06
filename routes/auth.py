@@ -34,6 +34,9 @@ def role_required(*allowed_roles):
         def decorated_function(*args, **kwargs):
             user_role = session.get('role')
 
+            if user_role is None:
+                return redirect(url_for('auth.login'))
+
             if user_role not in allowed_roles:
                 abort(403)
 
