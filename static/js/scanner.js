@@ -175,14 +175,13 @@ document.addEventListener("DOMContentLoaded", function () {
     async function initialiseQRDetection() {
 
         if (!("BarcodeDetector" in window)) {
+    updateMessage(
+        "QR image scanning is not supported by this browser. Please use Chrome or Edge.",
+        "error"
+    );
+    return;
+}
 
-            updateMessage(
-                "Camera started. Automatic QR detection is not supported by this browser. You can still use the demo scanner.",
-                "error"
-            );
-
-            return;
-        }
 
 
         try {
@@ -272,27 +271,36 @@ async function submitScannedQR(qrValue) {
     }
 }
 
-    function showResult(statusCode, data) {
+function showResult(statusCode, data) {
   const box = document.getElementById('scan-result');
   if (!box) return;
 
-  if (statusCode === 200 && data.status === 'Granted') {
+  const msg = (data && data.message) || '';
+  const isNotLoggedIn = statusCode === 401 && /not\s*logged\s*in/i.test(msg);
+
+  if (statusCode === 200 && data && data.status === 'Granted') {
     const s = data.student || {};
     box.className = 'scan-result success';
     box.innerHTML = `
-      <h2> Access Granted</h2>
+      <h2>Access Granted</h2>
       <p><strong>${s.name || 'Student'}</strong></p>
       <p>${s.student_number || ''} — ${s.course || ''}</p>
       <p class="muted">Attendance: ${data.attendance || 'Recorded'}</p>
     `;
-  } else if (statusCode === 401) {
+  } else if (isNotLoggedIn) {
+    //when "Not logged in"
     box.className = 'scan-result warning';
-    box.innerHTML = `<h2> ${data.message || 'Unauthorized'}</h2>
-      <p>Please log in as staff to scan.</p>`;
+    box.innerHTML = `
+      <h2>Not logged in</h2>
+      <p>Please log in as staff to scan.</p>
+    `;
   } else {
+    //other errors:
     box.className = 'scan-result error';
-    box.innerHTML = `<h2>Access Denied</h2>
-      <p>${data.message || 'Unknown error'}</p>`;
+    box.innerHTML = `
+      <h2>Access Denied</h2>
+      <p>${msg || 'Unknown error'}</p>
+    `;
   }
   box.style.display = 'block';
 }
@@ -347,7 +355,7 @@ async function processQRCode(qrValue) {
             if (!("BarcodeDetector" in window)) {
 
                 updateMessage(
-                    "QR image scanning is not supported by this browser. Use Test QR0001 for now.",
+                    "QR image scanning is not supported by this browser.",
                     "error"
                 );
 
