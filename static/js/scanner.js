@@ -24,9 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const scanLine =
         document.getElementById("scanLine");
 
-    const demoScanBtn =
-        document.getElementById("demoScanBtn");
-
     const qrUpload =
         document.getElementById("qrUpload");
 
@@ -332,11 +329,6 @@ async function processQRCode(qrValue) {
         window.location.href = "/verification";
     }, 1000);
 }
-
-// Demo scan button for testing (Dead code)
-demoScanBtn.addEventListener("click", function () {
-    processQRCode("QR0001");
-});
 
 
     qrUpload.addEventListener(
