@@ -24,9 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const scanLine =
         document.getElementById("scanLine");
 
-    const demoScanBtn =
-        document.getElementById("demoScanBtn");
-
     const qrUpload =
         document.getElementById("qrUpload");
 
@@ -178,14 +175,13 @@ document.addEventListener("DOMContentLoaded", function () {
     async function initialiseQRDetection() {
 
         if (!("BarcodeDetector" in window)) {
+    updateMessage(
+        "QR image scanning is not supported by this browser. Please use Chrome or Edge.",
+        "error"
+    );
+    return;
+}
 
-            updateMessage(
-                "Camera started. Automatic QR detection is not supported by this browser. You can still use the demo scanner.",
-                "error"
-            );
-
-            return;
-        }
 
 
         try {
@@ -253,61 +249,94 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+async function submitScannedQR(qrValue) {
+    try {
+        const gateEl = document.getElementById('gate');
+        const res = await fetch('/api/qr/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                qr_data: qrValue,
+                gate_location: gateEl ? gateEl.value : 'Main Entrance'
+            })
+        });
 
-    function processQRCode(qrValue) {
-
-        scanning = false;
-
-
-        updateStatus(
-            "Verified",
-            "success"
-        );
-
-
-        updateMessage(
-            "QR code detected: " + qrValue,
-            "success"
-        );
-
-
-        scanLine.classList.remove("active");
-
-
-        setTimeout(function () {
-
-            window.location.href =
-                "verification.html?qr=" +
-                encodeURIComponent(qrValue);
-
-        }, 1000);
+        const data = await res.json();
+        showResult(res.status, data);
+        return { statusCode: res.status, data };
+    } catch (err) {
+        console.error(err);
+        showResult(0, { message: 'Network error. Please try again.' });
+        return { statusCode: 0, data: { message: 'Network error.' } };
     }
+}
 
+function showResult(statusCode, data) {
+  const box = document.getElementById('scan-result');
+  if (!box) return;
 
-    demoScanBtn.addEventListener(
-        "click",
-        function () {
+  const msg = (data && data.message) || '';
+  const isNotLoggedIn = statusCode === 401 && /not\s*logged\s*in/i.test(msg);
 
-            updateStatus(
-                "Verified",
-                "success"
-            );
+  if (statusCode === 200 && data && data.status === 'Granted') {
+    const s = data.student || {};
+    box.className = 'scan-result success';
+    box.innerHTML = `
+      <h2>Access Granted</h2>
+      <p><strong>${s.name || 'Student'}</strong></p>
+      <p>${s.student_number || ''} — ${s.course || ''}</p>
+      <p class="muted">Attendance: ${data.attendance || 'Recorded'}</p>
+    `;
+  } else if (isNotLoggedIn) {
+    //when "Not logged in"
+    box.className = 'scan-result warning';
+    box.innerHTML = `
+      <h2>Not logged in</h2>
+      <p>Please log in as staff to scan.</p>
+    `;
+  } else {
+    //other errors:
+    box.className = 'scan-result error';
+    box.innerHTML = `
+      <h2>Access Denied</h2>
+      <p>${msg || 'Unknown error'}</p>
+    `;
+  }
+  box.style.display = 'block';
+}
 
+async function processQRCode(qrValue) {
+    scanning = false;
+    scanLine.classList.remove("active");
 
-            updateMessage(
-                "Demo QR detected: QR0001",
-                "success"
-            );
+    updateStatus("Scanning", "scanning");
+    updateMessage("Sending QR to server for verification...");
 
+    const gateEl = document.getElementById('gate');
+    const gate = gateEl ? gateEl.value : 'Main Entrance';
+    const result = await submitScannedQR(qrValue);
 
-            setTimeout(function () {
+    sessionStorage.setItem('verifyResult', JSON.stringify({
+        statusCode: result.statusCode,
+        data: result.data,
+        qrRaw: qrValue,
+        gate: gate,
+        scannedAt: new Date().toLocaleTimeString()
+    }));
 
-                window.location.href =
-                    "verification.html?qr=QR0001";
+    const ok = result.statusCode === 200 && result.data.status === 'Granted';
 
-            }, 700);
-        }
+    updateStatus(ok ? "Verified" : "Denied", ok ? "success" : "error");
+    updateMessage(
+        ok ? "Access granted. Redirecting..."
+           : ((result.data && result.data.message) || "Access denied."),
+        ok ? "success" : "error"
     );
+
+    setTimeout(function () {
+        window.location.href = "/verification";
+    }, 1000);
+}
 
 
     qrUpload.addEventListener(
@@ -326,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!("BarcodeDetector" in window)) {
 
                 updateMessage(
-                    "QR image scanning is not supported by this browser. Use Test QR0001 for now.",
+                    "QR image scanning is not supported by this browser.",
                     "error"
                 );
 

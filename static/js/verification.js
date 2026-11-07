@@ -1,359 +1,93 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', () => {
+  const raw = sessionStorage.getItem('verifyResult');
+  const content = document.getElementById('verificationContent');
+  const invalid = document.getElementById('invalidSection');
+  const banner = document.getElementById('verificationBanner');
+  const icon = document.getElementById('verificationIcon');
+  const title = document.getElementById('verificationTitle');
+  const message = document.getElementById('verificationMessage');
 
-    const students = {
+  if (!raw) {
+    if (content) content.style.display = 'none';
+    if (invalid) invalid.style.display = 'block';
+    return;
+  }
 
-        QR0001: {
-            firstName: "Lerato",
-            lastName: "Molefe",
-            studentNumber: "ST2025001",
-            email: "lerato.molefe@richfield.ac.za",
-            course: "Bachelor of Science in Information Technology",
-            faculty: "Information Technology",
-            cardStatus: "Active",
-            expiry: "31 December 2027",
-            moduleCode: "CC101",
-            moduleName: "Cloud Computing",
-            venue: "Lab 1",
-            day: "Monday",
-            time: "09:00"
-        },
+  const { statusCode, data, qrRaw, gate, scannedAt } = JSON.parse(raw);
+  const granted = statusCode === 200 && data && data.status === 'Granted';
 
-        QR0002: {
-            firstName: "Sipho",
-            lastName: "Naidoo",
-            studentNumber: "ST2025002",
-            email: "sipho.naidoo@richfield.ac.za",
-            course: "Diploma in Information Technology",
-            faculty: "Information Technology",
-            cardStatus: "Active",
-            expiry: "31 December 2027",
-            moduleCode: "IOT102",
-            moduleName: "Internet of Things",
-            venue: "Lab 2",
-            day: "Tuesday",
-            time: "10:00"
-        },
+  const setText = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
 
-        QR0003: {
-            firstName: "Ayanda",
-            lastName: "Smith",
-            studentNumber: "ST2025003",
-            email: "ayanda.smith@richfield.ac.za",
-            course: "Bachelor of Business Administration",
-            faculty: "Business and Management",
-            cardStatus: "Active",
-            expiry: "31 December 2027",
-            moduleCode: "CYB103",
-            moduleName: "Cybersecurity",
-            venue: "Lab 3",
-            day: "Wednesday",
-            time: "11:00"
-        },
+  setText('qrCode', qrRaw || '--');
+  setText('scanLocation', gate || 'Main Entrance');
+  setText('scanTime', scannedAt || new Date().toLocaleTimeString());
 
-        QR0004: {
-            firstName: "Thabo",
-            lastName: "Johnson",
-            studentNumber: "ST2025004",
-            email: "thabo.johnson@richfield.ac.za",
-            course: "Diploma in Business Management",
-            faculty: "Business and Management",
-            cardStatus: "Active",
-            expiry: "31 December 2027",
-            moduleCode: "SD104",
-            moduleName: "Software Development",
-            venue: "Lab 4",
-            day: "Thursday",
-            time: "09:00"
-        }
-
-    };
-
-
-    const parameters =
-        new URLSearchParams(
-            window.location.search
-        );
-
-
-    const qrValue =
-        parameters.get("qr");
-
-
-    const verificationContent =
-        document.getElementById(
-            "verificationContent"
-        );
-
-
-    const moduleSection =
-        document.getElementById(
-            "moduleSection"
-        );
-
-
-    const invalidSection =
-        document.getElementById(
-            "invalidSection"
-        );
-
-
-    const verificationBanner =
-        document.getElementById(
-            "verificationBanner"
-        );
-
-
-    const verificationIcon =
-        document.getElementById(
-            "verificationIcon"
-        );
-
-
-    const verificationTitle =
-        document.getElementById(
-            "verificationTitle"
-        );
-
-
-    const verificationMessage =
-        document.getElementById(
-            "verificationMessage"
-        );
-
-
-    const confirmAccessBtn =
-        document.getElementById(
-            "confirmAccessBtn"
-        );
-
-
-    function showInvalidQR() {
-
-        verificationContent.style.display =
-            "none";
-
-        moduleSection.style.display =
-            "none";
-
-        invalidSection.style.display =
-            "block";
+  if (!granted) {
+    if (content) content.style.display = 'none';
+    if (invalid) {
+      invalid.style.display = 'block';
+      const p = invalid.querySelector('.invalid-card p');
+      if (p) p.textContent =
+        (data && data.message) || 'The scanned QR code could not be verified.';
     }
-
-
-    if (!qrValue || !students[qrValue]) {
-
-        showInvalidQR();
-
-        return;
-    }
-
-
-    const student =
-        students[qrValue];
-
-
-    const initials =
-        student.firstName.charAt(0) +
-        student.lastName.charAt(0);
-
-
-    document.getElementById(
-        "studentPhoto"
-    ).textContent = initials;
-
-
-    document.getElementById(
-        "studentName"
-    ).textContent =
-        student.firstName +
-        " " +
-        student.lastName;
-
-
-    document.getElementById(
-        "studentNumber"
-    ).textContent =
-        student.studentNumber;
-
-
-    document.getElementById(
-        "studentEmail"
-    ).textContent =
-        student.email;
-
-
-    document.getElementById(
-        "studentCourse"
-    ).textContent =
-        student.course;
-
-
-    document.getElementById(
-        "studentFaculty"
-    ).textContent =
-        student.faculty;
-
-
-    document.getElementById(
-        "cardExpiry"
-    ).textContent =
-        student.expiry;
-
-
-    document.getElementById(
-        "cardStatus"
-    ).textContent =
-        student.cardStatus;
-
-
-    document.getElementById(
-        "qrCode"
-    ).textContent =
-        qrValue;
-
-
-    document.getElementById(
-        "moduleCode"
-    ).textContent =
-        student.moduleCode;
-
-
-    document.getElementById(
-        "moduleName"
-    ).textContent =
-        student.moduleName;
-
-
-    document.getElementById(
-        "moduleVenue"
-    ).textContent =
-        student.venue;
-
-
-    document.getElementById(
-        "moduleDay"
-    ).textContent =
-        student.day;
-
-
-    document.getElementById(
-        "moduleTime"
-    ).textContent =
-        student.time;
-
-
-    const now =
-        new Date();
-
-
-    document.getElementById(
-        "scanTime"
-    ).textContent =
-        now.toLocaleTimeString(
-            [],
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
-
-
-    const cardBadge =
-        document.getElementById(
-            "cardBadge"
-        );
-
-
-    cardBadge.textContent =
-        student.cardStatus;
-
-
-    if (student.cardStatus === "Active") {
-
-        document.getElementById(
-            "cardStatus"
-        ).classList.add(
-            "success-text"
-        );
-
-        cardBadge.classList.add(
-            "active"
-        );
-
-    }
-
-    else {
-
-        verificationBanner.classList.add(
-            "denied"
-        );
-
-
-        verificationIcon.textContent =
-            "×";
-
-
-        verificationTitle.textContent =
-            "Access Denied";
-
-
-        verificationMessage.textContent =
-            "This digital access card is not active.";
-
-
-        document.getElementById(
-            "cardStatus"
-        ).classList.add(
-            "danger-text"
-        );
-
-
-        cardBadge.classList.add(
-            student.cardStatus.toLowerCase()
-        );
-
-
-        confirmAccessBtn.disabled =
-            true;
-
-    }
-
-
-    confirmAccessBtn.addEventListener(
-        "click",
-        function () {
-
-            const attendanceStatus =
-                document.getElementById(
-                    "attendanceStatus"
-                );
-
-
-            attendanceStatus.textContent =
-                "Present";
-
-
-            attendanceStatus.classList.add(
-                "success-text"
-            );
-
-
-            confirmAccessBtn.textContent =
-                "Access Confirmed ✓";
-
-
-            confirmAccessBtn.disabled =
-                true;
-
-
-            alert(
-                student.firstName +
-                " " +
-                student.lastName +
-                " has been granted access."
-            );
-
-        }
-    );
-
+    return;
+  }
+
+  // IF GRANTED
+  const s = data.student || {};
+  const m = data.module || {};
+  const initials = `${(s.first_name || '?')[0]}${(s.last_name || '?')[0]}`.toUpperCase();
+
+  if (banner) banner.classList.remove('denied');
+  if (icon) icon.textContent = '✓';
+  if (title) title.textContent = 'Access Granted';
+  if (message) message.textContent = 'Student identity successfully verified.';
+
+  setText('studentPhoto', initials || '--');
+  setText('studentName', s.name || 'Unknown Student');
+  setText('studentNumber', s.student_number || '--');
+  setText('studentEmail', s.email || '--');
+  setText('studentCourse', s.course || '--');
+  setText('studentFaculty', s.faculty || '--');
+  setText('cardExpiry', s.expiry_date || '--');
+
+  const badge = document.getElementById('cardBadge');
+  const statusEl = document.getElementById('cardStatus');
+  if (badge) {
+    badge.textContent = s.card_status || 'Active';
+    badge.classList.remove('denied');
+    badge.classList.add('active');
+  }
+  if (statusEl) {
+    statusEl.textContent = s.card_status || 'Active';
+    statusEl.classList.remove('danger-text');
+    statusEl.classList.add('success-text');
+  }
+
+  const att = document.getElementById('attendanceStatus');
+  if (att) {
+    att.textContent = data.attendance || 'Recorded';
+    att.classList.remove('danger-text');
+    att.classList.add('success-text');
+  }
+
+  if (m.code) {
+    setText('moduleCode', m.code || '--');
+    setText('moduleName', m.name || 'No module loaded');
+    setText('moduleVenue', m.venue || '--');
+    setText('moduleDay', m.day || '--');
+    setText('moduleTime', m.time || '--');
+  } else {
+    const modSection = document.getElementById('moduleSection');
+    if (modSection) modSection.style.display = 'none';
+  }
+
+  const confirmBtn = document.getElementById('confirmAccessBtn');
+  if (confirmBtn) {
+    confirmBtn.textContent = 'Access Confirmed ✓';
+    confirmBtn.disabled = true;
+  }
 });

@@ -123,3 +123,15 @@ def api_scans():
     conn.close()
 
     return jsonify({'scans': rows})
+
+@staff_bp.route('/scanner')
+@role_required('Administrator', 'Security Personnel')
+def scanner():
+    return render_template('scanner.html')
+
+@staff_bp.route('/verification')
+@role_required('Administrator', 'Security Personnel')
+def verification():
+    return render_template('verification.html')
+
+
