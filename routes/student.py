@@ -321,6 +321,13 @@ def api_notifications():
 
     notifications = cursor.fetchall()
 
+    cursor.execute(
+        'UPDATE NOTIFICATION '
+        'SET Is_Read = TRUE '
+        'WHERE Student_ID = %s',
+        (session['student_id'],)
+    )
+
     conn.commit()
 
     cursor.close()
