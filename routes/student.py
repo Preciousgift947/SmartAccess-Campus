@@ -187,14 +187,6 @@ def notifications():
 
     notifications = cursor.fetchall()
 
-    # Mark notifications as read
-    cursor.execute(
-        'UPDATE NOTIFICATION '
-        'SET Is_Read = TRUE '
-        'WHERE Student_ID = %s',
-        (session['student_id'],)
-    )
-
     conn.commit()
 
     cursor.close()
