@@ -166,7 +166,34 @@ def login():
 def staff_dashboard():
     return render_template('staff_dashboard.html')
 
+# ============================================
+# STAFF SCANNER
+# ============================================
 
+@auth_bp.route('/scanner')
+@role_required('Administrator', 'Security Personnel')
+def scanner():
+    return render_template('scanner.html')
+
+
+# ============================================
+# STAFF REPORTS
+# ============================================
+
+@auth_bp.route('/reports')
+@role_required('Administrator', 'Security Personnel')
+def reports():
+    return render_template('reports.html')
+
+
+# ============================================
+# STAFF CALENDAR
+# ============================================
+
+@auth_bp.route('/calendar')
+@role_required('Administrator', 'Security Personnel')
+def calendar():
+    return render_template('academic_calendar.html')
 # ============================================
 # LOGOUT
 # ============================================
@@ -183,3 +210,4 @@ def logout():
     return redirect(
         url_for('auth.login')
     )
+    
