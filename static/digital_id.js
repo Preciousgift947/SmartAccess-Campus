@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </div>
                     </div>
 
-                    <div class="qr">
-                        <span>${escapeHtml(student.QR_Code_Data)}</span>
+                    <div class="qr" id="qr-box" style="display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                        <span>Loading QR code...</span>
                     </div>
 
                     <p>Status: <strong>${escapeHtml(status)}</strong></p>
@@ -64,6 +64,22 @@ document.addEventListener("DOMContentLoaded", async function () {
             </div>
         </div>
     `;
+
+    // Get the real, scannable QR image from the QR endpoint
+    const qrBox = document.getElementById("qr-box");
+    try {
+        const res = await fetch("/api/qr/generate", { credentials: "same-origin" });
+        const data = await res.json();
+        
+        if (res.ok && data.qr && data.qr.image) {
+            qrBox.style.background = "#fff";
+            qrBox.innerHTML = `<img src="${data.qr.image}" alt="Your access QR code" style="width:100%; height:100%; object-fit: contain;">`;
+        } else {
+            qrBox.innerHTML = `<span>${escapeHtml(data.message || "QR code not available")}</span>`;
+        }
+    } catch (err) {
+        qrBox.innerHTML = "<span>QR code not available</span>";
+    }
 });
 
 function escapeHtml(value) {
