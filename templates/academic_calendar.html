@@ -24,10 +24,19 @@
     </div>
 
    <nav>
-    <a href="staff_dashboard.html">Dashboard</a>
-    <a href="scanner.html">QR Scanner</a>
-    <a href="academic_calendar.html" class="active">Calendar</a>
-    <a href="reports.html">Reports</a>
+    {% if session.get('student_id') %}
+    <a href="/dashboard">Dashboard</a>
+    <a href="/digital_id">Digital ID</a>
+    <a href="/attendance">Attendance</a>
+    <a href="/calendar" class="active">Calendar</a>
+    <a href="/profile">Profile</a>
+    <a href="/notifications">Notifications</a>
+    {% else %}
+    <a href="/staff-dashboard">Dashboard</a>
+    <a href="/scanner">QR Scanner</a>
+    <a href="/calendar" class="active">Calendar</a>
+    <a href="/reports">Reports</a>
+    {% endif %}
 </nav>
 
 </header>
