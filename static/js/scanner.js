@@ -172,62 +172,109 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    // Decode a QR code from an image or video frame using the jsQR library.
+    // Used when the browser has no built-in BarcodeDetector (e.g. Chrome on Windows).
+    function decodeWithJsQR(source, width, height, tryInverted) {
+
+        if (typeof jsQR === "undefined" || !width || !height) {
+            return null;
+        }
+
+        const scale = Math.min(1, 1000 / Math.max(width, height));
+        const w = Math.round(width * scale);
+        const h = Math.round(height * scale);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        ctx.drawImage(source, 0, 0, w, h);
+
+        const imageData = ctx.getImageData(0, 0, w, h);
+
+        const result = jsQR(imageData.data, w, h, {
+            inversionAttempts: tryInverted ? "attemptBoth" : "dontInvert"
+        });
+
+        return result ? result.data : null;
+    }
+
+
     async function initialiseQRDetection() {
 
-        if (!("BarcodeDetector" in window)) {
-    updateMessage(
-        "QR image scanning is not supported by this browser. Please use Chrome or Edge.",
-        "error"
-    );
-    return;
-}
+        if ("BarcodeDetector" in window) {
 
+            try {
 
+                barcodeDetector =
+                    new BarcodeDetector({
+                        formats: ["qr_code"]
+                    });
 
-        try {
+            }
 
-            barcodeDetector =
-                new BarcodeDetector({
-                    formats: ["qr_code"]
-                });
+            catch (error) {
 
+                console.error(error);
 
-            detectQRCode();
-
+                barcodeDetector = null;
+            }
         }
 
-        catch (error) {
 
-            console.error(error);
+        if (!barcodeDetector && typeof jsQR === "undefined") {
 
             updateMessage(
-                "QR detection could not be started.",
+                "QR scanning is not available in this browser.",
                 "error"
             );
+
+            return;
         }
+
+
+        detectQRCode();
     }
 
 
     async function detectQRCode() {
 
-        if (!scanning || !barcodeDetector) {
+        if (!scanning) {
             return;
         }
 
 
         try {
 
-            const codes =
-                await barcodeDetector.detect(
-                    cameraPreview
+            let qrValue = null;
+
+            if (barcodeDetector) {
+
+                const codes =
+                    await barcodeDetector.detect(
+                        cameraPreview
+                    );
+
+                if (codes.length > 0) {
+                    qrValue = codes[0].rawValue;
+                }
+
+            }
+
+            else if (cameraPreview.readyState >= 2) {
+
+                qrValue = decodeWithJsQR(
+                    cameraPreview,
+                    cameraPreview.videoWidth,
+                    cameraPreview.videoHeight,
+                    false
                 );
 
+            }
 
-            if (codes.length > 0) {
 
-                const qrValue =
-                    codes[0].rawValue;
-
+            if (qrValue) {
 
                 processQRCode(qrValue);
 
@@ -352,17 +399,6 @@ async function processQRCode(qrValue) {
             }
 
 
-            if (!("BarcodeDetector" in window)) {
-
-                updateMessage(
-                    "QR image scanning is not supported by this browser.",
-                    "error"
-                );
-
-                return;
-            }
-
-
             try {
 
                 updateStatus(
@@ -380,17 +416,44 @@ async function processQRCode(qrValue) {
                     await createImageBitmap(file);
 
 
-                const detector =
-                    new BarcodeDetector({
-                        formats: ["qr_code"]
-                    });
+                let qrValue = null;
+
+                if ("BarcodeDetector" in window) {
+
+                    try {
+
+                        const detector =
+                            new BarcodeDetector({
+                                formats: ["qr_code"]
+                            });
+
+                        const codes =
+                            await detector.detect(bitmap);
+
+                        if (codes.length > 0) {
+                            qrValue = codes[0].rawValue;
+                        }
+
+                    }
+
+                    catch (detectError) {
+                        console.log("BarcodeDetector failed, using jsQR");
+                    }
+                }
 
 
-                const codes =
-                    await detector.detect(bitmap);
+                if (!qrValue) {
+
+                    qrValue = decodeWithJsQR(
+                        bitmap,
+                        bitmap.width,
+                        bitmap.height,
+                        true
+                    );
+                }
 
 
-                if (codes.length === 0) {
+                if (!qrValue) {
 
                     updateStatus(
                         "Not Found",
@@ -408,7 +471,7 @@ async function processQRCode(qrValue) {
 
 
                 processQRCode(
-                    codes[0].rawValue
+                    qrValue
                 );
 
             }
