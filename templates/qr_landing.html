@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+
+    <title>SmartAccess | Student Card</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f4f7fb;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1b2a41;
+        }
+
+        header {
+            background: #0b3f82;
+            color: #ffffff;
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        header strong { display: block; font-size: 1.1rem; }
+        header span { font-size: 0.85rem; opacity: 0.85; }
+
+        main { max-width: 460px; margin: 0 auto; padding: 20px 16px 40px; }
+
+        .banner {
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .banner.ok { background: #e8f6ed; color: #14693a; border: 1px solid #b7e1c6; }
+        .banner.bad { background: #fdeceb; color: #a32a22; border: 1px solid #f3c0bc; }
+        .banner small { display: block; font-weight: 400; font-size: 0.9rem; margin-top: 6px; }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #d8e0ec;
+            border-radius: 12px;
+            padding: 6px 18px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf1f7;
+        }
+
+        .row:last-child { border-bottom: none; }
+        .row .label { color: #6b7280; font-size: 0.9rem; }
+        .row .value { font-weight: 600; text-align: right; word-break: break-word; }
+
+        .note { margin-top: 16px; color: #6b7280; font-size: 0.85rem; text-align: center; }
+        .note a { color: #0f5fb7; font-weight: 600; }
+
+        #attendance.good { color: #14693a; }
+        #attendance.problem { color: #a32a22; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <strong>RICHFIELD SmartAccess Campus</strong>
+    <span>Student card check</span>
+</header>
+
+<main>
+
+{% if valid %}
+
+    <div class="banner ok">
+        Valid student card
+        <small>This card is active.</small>
+    </div>
+
+    <div class="card">
+        <div class="row"><span class="label">Name</span><span class="value">{{ student.name }}</span></div>
+        <div class="row"><span class="label">Student number</span><span class="value">{{ student.student_number }}</span></div>
+        <div class="row"><span class="label">Course</span><span class="value">{{ student.course }}</span></div>
+        <div class="row"><span class="label">Faculty</span><span class="value">{{ student.faculty }}</span></div>
+        {% if student.email %}
+        <div class="row"><span class="label">Email</span><span class="value">{{ student.email }}</span></div>
+        {% endif %}
+        <div class="row"><span class="label">Card status</span><span class="value">{{ student.card_status }}</span></div>
+        <div class="row"><span class="label">Expires</span><span class="value">{{ student.expiry_date }}</span></div>
+        {% if is_staff %}
+        <div class="row"><span class="label">Attendance</span><span class="value" id="attendance">Recording...</span></div>
+        {% endif %}
+    </div>
+
+    {% if not is_staff %}
+    <p class="note">
+        Viewing only. Staff must <a href="/login">log in</a> to record attendance.
+    </p>
+    {% endif %}
+
+{% else %}
+
+    <div class="banner bad">
+        QR code not valid
+        <small>{{ message }}</small>
+    </div>
+
+    <p class="note">
+        If this is your card, open SmartAccess again to get a fresh QR code.
+    </p>
+
+{% endif %}
+
+</main>
+
+{% if valid and is_staff %}
+<script>
+    (async function () {
+        const out = document.getElementById("attendance");
+        try {
+            const res = await fetch("/api/qr/verify", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    qr_data: {{ qr_url|tojson }},
+                    gate_location: "Phone scan"
+                })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.status === "Granted") {
+                out.textContent = data.attendance || "Recorded";
+                out.className = "value good";
+            } else {
+                out.textContent = data.message || "Could not record";
+                out.className = "value problem";
+            }
+        } catch (err) {
+            out.textContent = "Network error";
+            out.className = "value problem";
+        }
+    })();
+</script>
+{% endif %}
+
+</body>
+</html>
