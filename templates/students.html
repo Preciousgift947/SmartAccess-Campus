@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>SmartAccess Campus - Add Student</title>
+    <title>SmartAccess Campus - Students</title>
 
     <link rel="stylesheet" href="../static/css/style.css">
     <link rel="stylesheet" href="../static/css/dashboard.css">
@@ -111,6 +111,84 @@
             border: 1px solid #f3c0bc;
         }
 
+        .form-title {
+            margin: 0 0 18px;
+            color: #0b3f82;
+        }
+
+        .form-actions .secondary {
+            background: #ffffff;
+            color: #0b3f82;
+            border: 1px solid #c4cfdf;
+        }
+
+        .list-card {
+            background: #ffffff;
+            border: 1px solid #d8e0ec;
+            border-radius: 14px;
+            padding: 22px;
+            margin-top: 28px;
+        }
+
+        .list-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .list-head h3 { margin: 0; color: #0b3f82; }
+
+        .list-head input {
+            padding: 10px 12px;
+            border: 1px solid #c4cfdf;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 240px;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table.students {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        table.students th,
+        table.students td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf1f7;
+            vertical-align: top;
+        }
+
+        table.students td:nth-child(2),
+        table.students td.row-actions {
+            white-space: nowrap;
+        }
+
+        table.students td:nth-child(3) { word-break: break-word; }
+
+        table.students th { color: #6b7280; font-weight: 600; }
+
+        .row-actions button {
+            border: 1px solid #c4cfdf;
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 6px;
+        }
+
+        .row-actions .edit { color: #0f5fb7; }
+        .row-actions .remove { color: #a32a22; border-color: #f3c0bc; }
+
+        .list-empty { color: #6b7280; padding: 14px 0; }
+
         @media (max-width: 700px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -136,7 +214,7 @@
         <a href="/staff-dashboard">Dashboard</a>
         <a href="/scanner">QR Scanner</a>
         <a href="/reports">Reports</a>
-        <a href="/add-student" class="active">Add Student</a>
+        <a href="/students" class="active">Students</a>
     </nav>
 
 </header>
@@ -148,14 +226,14 @@
 
         <div>
             <p class="breadcrumb">
-                SmartAccess Campus / Staff / Add Student
+                SmartAccess Campus / Staff / Students
             </p>
 
-            <h2>Add Student</h2>
+            <h2>Students</h2>
 
             <p>
-                Register a new student. They get an active digital access card
-                and can log in with their student number and the password you set.
+                Add, edit or remove students. New students get an active digital
+                access card and log in with their student number and the password you set.
             </p>
         </div>
 
@@ -164,7 +242,9 @@
 
     <section class="form-card">
 
-        <form id="addStudentForm" novalidate>
+        <h3 class="form-title" id="formTitle">Add a student</h3>
+
+        <form id="studentForm" novalidate>
 
             <div class="form-grid">
 
@@ -210,22 +290,51 @@
                 </div>
 
                 <div class="form-field full">
-                    <label for="password">Temporary password *</label>
+                    <label for="password" id="passwordLabel">Temporary password *</label>
                     <input id="password" name="password" type="password"
                            minlength="8" autocomplete="new-password" required>
-                    <span class="hint">At least 8 characters. It is stored hashed, never as plain text.</span>
+                    <span class="hint" id="passwordHint">At least 8 characters. It is stored hashed, never as plain text.</span>
                 </div>
 
             </div>
 
             <div class="form-actions">
                 <button type="submit" id="submitBtn">Add student</button>
+                <button type="button" id="cancelBtn" class="secondary" style="display:none">Cancel</button>
                 <a href="/staff-dashboard">Back to dashboard</a>
             </div>
 
             <div id="formMessage" class="form-message" role="status"></div>
 
         </form>
+
+    </section>
+
+
+    <section class="list-card">
+
+        <div class="list-head">
+            <h3>All students <span id="studentCount" style="color:#6b7280;font-weight:400"></span></h3>
+            <input id="searchBox" type="search" placeholder="Search name, number or email">
+        </div>
+
+        <div class="table-wrap">
+            <table class="students">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Student number</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Faculty</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentRows"></tbody>
+            </table>
+        </div>
+
+        <div id="listEmpty" class="list-empty" style="display:none">No students found.</div>
 
     </section>
 
@@ -242,7 +351,7 @@
 </footer>
 
 <script src="{{ url_for('static', filename='api.js') }}"></script>
-<script src="{{ url_for('static', filename='add_student.js') }}"></script>
+<script src="{{ url_for('static', filename='students.js') }}"></script>
 
 </body>
 </html>
