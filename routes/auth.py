@@ -138,7 +138,7 @@ def login():
             session['role'] = 'student'
 
             return redirect(
-                url_for('student.dashboard')
+                url_for('student.digital_id')
             )
 
         # ====================================
