@@ -14,7 +14,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 import mysql.connector
-from flask import Blueprint, jsonify, request, session
+from flask import Blueprint, jsonify, render_template, request, session
 
 from config import Config
 from routes.staff import api_staff_required
@@ -22,6 +22,9 @@ from utils.qr_utils import generate_base64_qr, decode_qr_token
 
 
 qr_bp = Blueprint('qr', __name__, url_prefix='/api/qr')
+
+# Public page a phone opens after scanning a student's QR code
+qr_page_bp = Blueprint('qr_page', __name__)
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +119,10 @@ def generate_qr():
             )
             card_id = cursor.lastrowid
 
-        qr_result = generate_base64_qr(student_id, student['Student_Number'])
+        base_url = (Config.PUBLIC_BASE_URL or request.host_url).rstrip('/')
+        qr_result = generate_base64_qr(
+            student_id, student['Student_Number'], base_url
+        )
 
         cursor.execute(
             '''
@@ -148,6 +154,61 @@ def generate_qr():
 
 
 # ============================================
+# SHARED CHECK: is this QR token valid right now?
+# ============================================
+
+def _validate_card(conn, cursor, student_id, token_uuid):
+    """Returns (card_row, None) when valid, else (None, (message, http_code))."""
+    cursor.execute(
+        '''
+        SELECT c.Card_ID,
+               c.QR_Token,
+               c.Token_Issued_At,
+               c.Expiry_Date,
+               c.Card_Status,
+               s.Student_Number,
+               s.First_Name,
+               s.Last_Name,
+               s.Email,
+               s.Course,
+               s.Faculty
+        FROM DIGITAL_ACCESS_CARD c
+        JOIN STUDENT s ON s.Student_ID = c.Student_ID
+        WHERE c.Student_ID = %s AND c.Card_Status = 'Active'
+        ORDER BY c.Expiry_Date DESC
+        LIMIT 1
+        ''',
+        (student_id,)
+    )
+    row = cursor.fetchone()
+
+    if not row:
+        return None, ("No active card found", 403)
+
+    # TOKEN VALIDATION
+    if not row['QR_Token'] or row['QR_Token'] != token_uuid:
+        return None, ("Invalid or revoked QR token", 401)
+
+    # CARD EXPIRY
+    today = _now_sast().date()
+    if row['Expiry_Date'] < today:
+        cursor.execute(
+            "UPDATE DIGITAL_ACCESS_CARD SET Card_Status = 'Expired' WHERE Card_ID = %s",
+            (row['Card_ID'],)
+        )
+        conn.commit()
+        return None, ("Card expired", 403)
+
+    # TOKEN TTL
+    if TOKEN_TTL_HOURS > 0 and row['Token_Issued_At']:
+        age = _now_sast() - row['Token_Issued_At']
+        if age > timedelta(hours=TOKEN_TTL_HOURS):
+            return None, ("QR token expired, please regenerate", 401)
+
+    return row, None
+
+
+# ============================================
 # VERIFY QR  (staff only - security scanner calls it)
 # ============================================
 
@@ -174,51 +235,11 @@ def verify_qr():
     cursor = conn.cursor(dictionary=True)
 
     try:
-        cursor.execute(
-            '''
-            SELECT c.Card_ID,
-                   c.QR_Token,
-                   c.Token_Issued_At,
-                   c.Expiry_Date,
-                   c.Card_Status,
-                   s.Student_Number,
-                   s.First_Name,
-                   s.Last_Name,
-                   s.Email,
-                   s.Course,
-                   s.Faculty
-            FROM DIGITAL_ACCESS_CARD c
-            JOIN STUDENT s ON s.Student_ID = c.Student_ID
-            WHERE c.Student_ID = %s AND c.Card_Status = 'Active'
-            ORDER BY c.Expiry_Date DESC
-            LIMIT 1
-            ''',
-            (student_id,)
-        )
-        row = cursor.fetchone()
+        row, error = _validate_card(conn, cursor, student_id, token_uuid)
+        if error:
+            return jsonify({"message": error[0]}), error[1]
 
-        if not row:
-            return jsonify({"message": "No active card found"}), 403
-
-        # TOKEN VALIDATION
-        if not row['QR_Token'] or row['QR_Token'] != token_uuid:
-            return jsonify({"message": "Invalid or revoked QR token"}), 401
-
-        # CARD EXPIRY
         today = _now_sast().date()
-        if row['Expiry_Date'] < today:
-            cursor.execute(
-                "UPDATE DIGITAL_ACCESS_CARD SET Card_Status = 'Expired' WHERE Card_ID = %s",
-                (row['Card_ID'],)
-            )
-            conn.commit()
-            return jsonify({"message": "Card expired"}), 403
-
-        # TOKEN TTL
-        if TOKEN_TTL_HOURS > 0 and row['Token_Issued_At']:
-            age = _now_sast() - row['Token_Issued_At']
-            if age > timedelta(hours=TOKEN_TTL_HOURS):
-                return jsonify({"message": "QR token expired, please regenerate"}), 401
 
         # Get first enrolled module for module display
         cursor.execute(
@@ -347,3 +368,50 @@ def get_card_status():
     finally:
         cursor.close()
         conn.close()
+
+
+# ============================================
+# PHONE LANDING PAGE  (opened by scanning the QR with a camera)
+# ============================================
+
+@qr_page_bp.route('/qr/<int:student_id>/<token_uuid>')
+def qr_landing(student_id, token_uuid):
+    """Read-only card page. It never records attendance by itself:
+    a logged-in staff member's page asks /api/qr/verify to do that."""
+    is_staff = session.get('role') in ('Administrator', 'Security Personnel')
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        row, error = _validate_card(conn, cursor, student_id, token_uuid.lower())
+    except mysql.connector.Error:
+        logger.exception("DB error in qr_landing")
+        return render_template(
+            'qr_landing.html', valid=False, is_staff=False,
+            message="Could not check this QR code. Please try again."
+        ), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+    if error:
+        return render_template(
+            'qr_landing.html', valid=False, is_staff=False, message=error[0]
+        ), error[1]
+
+    return render_template(
+        'qr_landing.html',
+        valid=True,
+        is_staff=is_staff,
+        student={
+            'name': f"{row['First_Name']} {row['Last_Name']}",
+            'student_number': row['Student_Number'],
+            'course': row['Course'],
+            'faculty': row['Faculty'],
+            'card_status': row['Card_Status'],
+            'expiry_date': row['Expiry_Date'].isoformat(),
+            'email': row['Email'] if is_staff else None,
+        },
+        qr_url=request.url,
+    )
