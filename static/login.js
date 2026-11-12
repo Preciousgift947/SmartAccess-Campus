@@ -6,7 +6,7 @@ document.getElementById("login-form").addEventListener("submit", async function 
   const result = await apiPost("/api/login", { identifier, password });
 
   if (result.status === 200 && result.data.success) {
-    window.location.href = result.data.role === "admin" ? "/staff-dashboard" : "/dashboard";
+    window.location.href = result.data.role === "admin" ? "/staff-dashboard" : "/digital_id";
   } else {
     alert(result.data.message || "Login failed. Check your details and try again.");
   }
