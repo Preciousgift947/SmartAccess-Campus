@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, jsonify, request
+from flask import Blueprint, render_template, session, jsonify, request, redirect, url_for
 import mysql.connector
 import bcrypt
 import logging
@@ -154,25 +154,39 @@ def verification():
 
 
 # ============================================
-# ADD STUDENT (administrators only)
+# MANAGE STUDENTS (administrators only)
 # ============================================
+
+STUDENT_COLUMNS = (
+    'Student_ID, First_Name, Last_Name, Student_Number, Email, '
+    'Phone_Number, Course, Faculty, Registration_Date'
+)
+
+
+@staff_bp.route('/students')
+@role_required(*ADMIN_ROLES)
+def students_page():
+    return render_template('students.html')
+
 
 @staff_bp.route('/add-student')
 @role_required(*ADMIN_ROLES)
 def add_student_page():
-    return render_template('add_student.html')
+    # Old address: the add form now lives on the Students page
+    return redirect(url_for('staff.students_page'))
 
 
-@staff_bp.route('/api/students', methods=['POST'])
-@api_admin_required
-def api_add_student():
-    data = request.get_json(silent=True)
+def _read_student_fields(data, password_required):
+    """Validate the student form. Returns (fields, None) or (None, error_response)."""
     if not isinstance(data, dict):
-        return jsonify({'success': False, 'message': 'Invalid request body'}), 400
+        return None, (jsonify({'success': False, 'message': 'Invalid request body'}), 400)
 
     def clean(key):
         value = data.get(key)
         return value.strip() if isinstance(value, str) else ''
+
+    def fail(message):
+        return None, (jsonify({'success': False, 'message': message}), 400)
 
     first_name = clean('first_name')
     last_name = clean('last_name')
@@ -183,42 +197,95 @@ def api_add_student():
     faculty = clean('faculty')
     password = data.get('password') if isinstance(data.get('password'), str) else ''
 
-    # ---- validation ----
-    if not all([first_name, last_name, student_number, email, course, faculty, password]):
-        return jsonify({'success': False,
-                        'message': 'Please fill in all required fields'}), 400
+    required = [first_name, last_name, student_number, email, course, faculty]
+    if password_required:
+        required.append(password)
+    if not all(required):
+        return fail('Please fill in all required fields')
 
     if len(first_name) > 50 or len(last_name) > 50:
-        return jsonify({'success': False,
-                        'message': 'First and last name must be 50 characters or fewer'}), 400
+        return fail('First and last name must be 50 characters or fewer')
 
     if not re.fullmatch(r'[A-Za-z0-9]{3,20}', student_number):
-        return jsonify({'success': False,
-                        'message': 'Student number must be 3 to 20 letters or digits'}), 400
+        return fail('Student number must be 3 to 20 letters or digits')
 
     if len(email) > 100 or not re.fullmatch(r'[^@\s]+@[^@\s]+\.[^@\s]+', email):
-        return jsonify({'success': False, 'message': 'Please enter a valid email address'}), 400
+        return fail('Please enter a valid email address')
 
     if phone and not re.fullmatch(r'[0-9+ ]{7,15}', phone):
-        return jsonify({'success': False,
-                        'message': 'Phone number must be 7 to 15 digits'}), 400
+        return fail('Phone number must be 7 to 15 digits')
 
     if len(course) > 100 or len(faculty) > 100:
-        return jsonify({'success': False,
-                        'message': 'Course and faculty must be 100 characters or fewer'}), 400
+        return fail('Course and faculty must be 100 characters or fewer')
 
-    if len(password) < 8:
-        return jsonify({'success': False,
-                        'message': 'Password must be at least 8 characters'}), 400
+    password_hash = None
+    if password:
+        if len(password) < 8:
+            return fail('Password must be at least 8 characters')
+        if len(password.encode('utf-8')) > 72:
+            return fail('Password is too long (72 characters at most)')
+        password_hash = bcrypt.hashpw(
+            password.encode('utf-8'), bcrypt.gensalt()
+        ).decode('utf-8')
 
-    if len(password.encode('utf-8')) > 72:
-        return jsonify({'success': False,
-                        'message': 'Password is too long (72 characters at most)'}), 400
+    return {
+        'first_name': first_name,
+        'last_name': last_name,
+        'student_number': student_number,
+        'email': email,
+        'phone': phone or None,
+        'course': course,
+        'faculty': faculty,
+        'password_hash': password_hash,
+    }, None
 
-    password_hash = bcrypt.hashpw(
-        password.encode('utf-8'),
-        bcrypt.gensalt()
-    ).decode('utf-8')
+
+@staff_bp.route('/api/students', methods=['GET'])
+@api_admin_required
+def api_list_students():
+    query = (request.args.get('q') or '').strip()[:100]
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        sql = f'SELECT {STUDENT_COLUMNS} FROM STUDENT'
+        params = ()
+        if query:
+            like = f'%{query}%'
+            sql += (' WHERE First_Name LIKE %s OR Last_Name LIKE %s'
+                    ' OR CONCAT(First_Name, " ", Last_Name) LIKE %s'
+                    ' OR Student_Number LIKE %s OR Email LIKE %s')
+            params = (like, like, like, like, like)
+        sql += ' ORDER BY Last_Name, First_Name LIMIT 500'
+
+        cursor.execute(sql, params)
+        rows = cursor.fetchall()
+
+    except mysql.connector.Error:
+        logger.exception("DB error in api_list_students")
+        return jsonify({'success': False,
+                        'message': 'Could not load students. Please try again.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    for row in rows:
+        if row.get('Registration_Date'):
+            row['Registration_Date'] = row['Registration_Date'].isoformat()
+
+    return jsonify({'success': True, 'students': rows})
+
+
+@staff_bp.route('/api/students', methods=['POST'])
+@api_admin_required
+def api_add_student():
+    fields, error = _read_student_fields(
+        request.get_json(silent=True), password_required=True
+    )
+    if error:
+        return error
 
     today = datetime.now(timezone(timedelta(hours=2))).date()
     expiry = today + timedelta(days=365)
@@ -234,13 +301,14 @@ def api_add_student():
                  Phone_Number, Course, Faculty, Password_Hash)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             ''',
-            (first_name, last_name, student_number, email,
-             phone or None, course, faculty, password_hash)
+            (fields['first_name'], fields['last_name'], fields['student_number'],
+             fields['email'], fields['phone'], fields['course'],
+             fields['faculty'], fields['password_hash'])
         )
         student_id = cursor.lastrowid
 
         # Every student gets an Active digital access card straight away.
-        # Their QR code is created when they first open Digital ID.
+        # Their QR code is created when they first open their QR page.
         cursor.execute(
             '''
             INSERT INTO DIGITAL_ACCESS_CARD
@@ -272,7 +340,107 @@ def api_add_student():
         'message': 'Student added',
         'student': {
             'Student_ID': student_id,
-            'Name': f'{first_name} {last_name}',
-            'Student_Number': student_number
+            'Name': f"{fields['first_name']} {fields['last_name']}",
+            'Student_Number': fields['student_number']
         }
     }), 201
+
+
+@staff_bp.route('/api/students/<int:student_id>', methods=['PUT'])
+@api_admin_required
+def api_update_student(student_id):
+    # Password is optional here: leave it out to keep the current one.
+    fields, error = _read_student_fields(
+        request.get_json(silent=True), password_required=False
+    )
+    if error:
+        return error
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('SELECT 1 FROM STUDENT WHERE Student_ID = %s', (student_id,))
+        if not cursor.fetchone():
+            return jsonify({'success': False, 'message': 'Student not found'}), 404
+
+        sql = (
+            'UPDATE STUDENT SET First_Name = %s, Last_Name = %s, '
+            'Student_Number = %s, Email = %s, Phone_Number = %s, '
+            'Course = %s, Faculty = %s'
+        )
+        params = [fields['first_name'], fields['last_name'],
+                  fields['student_number'], fields['email'], fields['phone'],
+                  fields['course'], fields['faculty']]
+
+        if fields['password_hash']:
+            sql += ', Password_Hash = %s'
+            params.append(fields['password_hash'])
+
+        sql += ' WHERE Student_ID = %s'
+        params.append(student_id)
+
+        cursor.execute(sql, tuple(params))
+        conn.commit()
+
+    except mysql.connector.IntegrityError:
+        conn.rollback()
+        return jsonify({'success': False,
+                        'message': 'A student with that student number or email already exists'}), 409
+
+    except mysql.connector.Error:
+        conn.rollback()
+        logger.exception("DB error in api_update_student")
+        return jsonify({'success': False,
+                        'message': 'Could not save the changes. Please try again.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    return jsonify({
+        'success': True,
+        'message': 'Student updated',
+        'password_changed': bool(fields['password_hash'])
+    })
+
+
+@staff_bp.route('/api/students/<int:student_id>', methods=['DELETE'])
+@api_admin_required
+def api_delete_student(student_id):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            'SELECT First_Name, Last_Name, Student_Number FROM STUDENT '
+            'WHERE Student_ID = %s',
+            (student_id,)
+        )
+        row = cursor.fetchone()
+        if not row:
+            return jsonify({'success': False, 'message': 'Student not found'}), 404
+
+        # The database removes their card, attendance, notifications and
+        # module links automatically (ON DELETE CASCADE).
+        cursor.execute('DELETE FROM STUDENT WHERE Student_ID = %s', (student_id,))
+        conn.commit()
+
+    except mysql.connector.Error:
+        conn.rollback()
+        logger.exception("DB error in api_delete_student")
+        return jsonify({'success': False,
+                        'message': 'Could not remove the student. Please try again.'}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+    logger.info("Student %s (%s) removed by admin %s",
+                row[2], student_id, session.get('user_id'))
+
+    return jsonify({
+        'success': True,
+        'message': 'Student removed',
+        'student': {'Name': f'{row[0]} {row[1]}', 'Student_Number': row[2]}
+    })

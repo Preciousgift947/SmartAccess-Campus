@@ -28,7 +28,7 @@
         <a href="/scanner">QR Scanner</a>
         <a href="/reports">Reports</a>
         {% if session.get('role') == 'Administrator' %}
-        <a href="/add-student">Add Student</a>
+        <a href="/students">Students</a>
         {% endif %}
     </nav>
 
@@ -125,15 +125,15 @@
 
 
                     {% if session.get('role') == 'Administrator' %}
-                    <a href="/add-student" class="quick-card">
+                    <a href="/students" class="quick-card">
 
                         <div class="quick-icon">
                             +
                         </div>
 
                         <div>
-                            <h4>Add Student</h4>
-                            <p>Register a new student and issue their digital access card.</p>
+                            <h4>Manage Students</h4>
+                            <p>Add, edit or remove students and issue their digital access cards.</p>
                         </div>
 
                     </a>
