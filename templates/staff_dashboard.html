@@ -8,31 +8,13 @@
 
     <link rel="stylesheet" href="../static/css/style.css">
     <link rel="stylesheet" href="../static/css/dashboard.css">
+    <link rel="stylesheet" href="../static/css/sidebar.css">
 </head>
 
-<body>
+<body class="with-sidebar">
 
-<header class="topbar">
-
-    <div class="brand">
-        <div class="brand-mark">R</div>
-
-        <div>
-            <h1>RICHFIELD</h1>
-            <span>SmartAccess Campus</span>
-        </div>
-    </div>
-
-    <nav>
-        <a href="/staff-dashboard" class="active">Dashboard</a>
-        <a href="/scanner">QR Scanner</a>
-        <a href="/reports">Reports</a>
-        {% if session.get('role') == 'Administrator' %}
-        <a href="/students">Students</a>
-        {% endif %}
-    </nav>
-
-</header>
+{% set active = 'dashboard' %}{% set page_title = 'Staff Dashboard' %}
+{% include '_sidebar.html' %}
 
 
 <main class="dashboard-page">
