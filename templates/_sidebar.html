@@ -1,0 +1,48 @@
+{# Shared sidebar + top bar for the staff pages. Set `active` before including. #}
+<aside class="sa-sidebar" id="sa-sidebar">
+    <div class="sa-logo">
+        <div class="sa-logo-badge">SA</div>
+        <div>
+            <strong>SmartAccess</strong>
+            <small>Campus System</small>
+        </div>
+    </div>
+
+    <div class="sa-nav-title">Staff Portal</div>
+
+    <nav class="sa-nav">
+        <a href="/staff-dashboard" class="{{ 'active' if active == 'dashboard' }}"><span>&#8962;</span>Staff Dashboard</a>
+        <a href="/scanner" class="{{ 'active' if active == 'scanner' }}"><span>&#9635;</span>QR Scanner</a>
+        <a href="/verification" class="{{ 'active' if active == 'verification' }}"><span>&#10003;</span>Student Verification</a>
+        <a href="/reports" class="{{ 'active' if active == 'reports' }}"><span>&#9636;</span>Reports</a>
+        {% if session.get('role') == 'Administrator' %}
+        <a href="/students" class="{{ 'active' if active == 'students' }}"><span>&#9998;</span>Manage Students</a>
+        {% endif %}
+        <a href="/logout"><span>&#8618;</span>Logout</a>
+    </nav>
+
+    <div class="sa-sidebar-footer">Richfield Graduate Institute of Technology</div>
+</aside>
+
+<header class="sa-topbar">
+    <button class="sa-menu-toggle" type="button" aria-label="Menu"
+            onclick="document.getElementById('sa-sidebar').classList.toggle('open')">&#9776;</button>
+    <h3>{{ page_title }}</h3>
+    <div class="sa-user">
+        <div class="sa-avatar" id="sa-avatar">ST</div>
+        <strong id="sa-username">{{ session.get('role') or 'Staff' }}</strong>
+    </div>
+</header>
+
+<script>
+    fetch('/api/staff_profile', { credentials: 'same-origin' })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (s) {
+            if (!s) { return; }
+            document.getElementById('sa-username').textContent =
+                (s.First_Name + ' ' + s.Last_Name).trim();
+            document.getElementById('sa-avatar').textContent =
+                ((s.First_Name || '?')[0] + (s.Last_Name || '')[0]).toUpperCase();
+        })
+        .catch(function () {});
+</script>

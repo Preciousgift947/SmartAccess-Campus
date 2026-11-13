@@ -8,28 +8,13 @@
 
     <link rel="stylesheet" href="../static/css/style.css">
     <link rel="stylesheet" href="../static/css/verification.css">
+    <link rel="stylesheet" href="../static/css/sidebar.css">
 </head>
 
-<body>
+<body class="with-sidebar">
 
-<header class="topbar">
-
-    <div class="brand">
-        <div class="brand-mark">R</div>
-
-        <div>
-            <h1>RICHFIELD</h1>
-            <span>SmartAccess Campus</span>
-        </div>
-    </div>
-
- <nav>
-    <a href="/staff-dashboard">Dashboard</a>
-    <a href="/scanner">QR Scanner</a>
-    <a href="/reports">Reports</a>
-</nav>
-
-</header>
+{% set active = 'verification' %}{% set page_title = 'Student Verification' %}
+{% include '_sidebar.html' %}
 
 
 <main class="page-container">
